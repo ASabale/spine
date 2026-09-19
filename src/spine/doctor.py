@@ -13,6 +13,25 @@ def _blocker_number(value: str) -> int | None:
     return None
 
 
+def _blocker_exists(root: Path, value: str) -> bool:
+    raw = value.strip()
+    if not raw:
+        return False
+    tickets = root / SPEC_ROOT / "tickets"
+    if not tickets.is_dir():
+        return False
+    cand = root / raw
+    if cand.exists() and cand.parent == tickets:
+        return True
+    named = tickets / Path(raw).name
+    if named.exists():
+        return True
+    num = _blocker_number(raw)
+    if num is None:
+        return False
+    return any(p.name.split("-", 1)[0] == f"{num:02d}" for p in tickets.glob("*.md"))
+
+
 def doctor_ok(msgs: list[str]) -> bool:
     """True when doctor has nothing left for a human/agent to interpret as drift."""
     return all(m == "ok" or m.startswith("FIX ") for m in msgs)
@@ -85,14 +104,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
 
             blocked = (meta.get("Blocked by") or "").strip()
             if blocked:
-                num = _blocker_number(blocked)
-                tickets = root / SPEC_ROOT / "tickets"
-                exists = False
-                if num is not None and tickets.is_dir():
-                    exists = any(
-                        p.name.split("-", 1)[0] == f"{num:02d}" for p in tickets.glob("*.md")
-                    )
-                if not exists:
+                if not _blocker_exists(root, blocked):
                     msgs.append(f"BROKEN blocker {path.name} → {blocked}")
                     if apply:
                         meta["Blocked by"] = ""
