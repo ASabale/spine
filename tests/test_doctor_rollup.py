@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from spine.artifacts import new_ticket, read_meta, write_meta
+from spine.artifacts import new_ticket, new_work_item, read_meta, write_meta
 from spine.doctor import doctor
 from spine.initcmd import init_target
 
@@ -77,3 +77,32 @@ def test_doctor_clears_resolved_blocker(tmp_path: Path):
     meta, _ = read_meta(later)
     assert not (meta.get("Blocked by") or "").strip()
 
+
+def test_doctor_resets_unknown_work_item_status(tmp_path: Path):
+    init_target(tmp_path)
+    wi = new_work_item(tmp_path, "Ship CLI")
+    meta, body = read_meta(wi)
+    meta["Status"] = "backlog"
+    write_meta(wi, meta, body)
+    msgs = doctor(tmp_path, apply=False)
+    assert any("unknown status backlog" in m and wi.name in m for m in msgs)
+    meta, _ = read_meta(wi)
+    assert meta["Status"] == "backlog"
+    msgs = doctor(tmp_path, apply=True)
+    assert any("FIX" in m and "status" in m.lower() and wi.name in m for m in msgs)
+    meta, _ = read_meta(wi)
+    assert meta["Status"] == "ready"
+    msgs = doctor(tmp_path, apply=True)
+    assert not any("FIX" in m and "status" in m.lower() and wi.name in m for m in msgs)
+
+
+def test_doctor_resets_illegal_ticket_status(tmp_path: Path):
+    init_target(tmp_path)
+    tk = new_ticket(tmp_path, "Name it")
+    meta, body = read_meta(tk)
+    meta["Status"] = "doing"
+    write_meta(tk, meta, body)
+    msgs = doctor(tmp_path, apply=True)
+    assert any("FIX" in m and "status" in m.lower() and tk.name in m for m in msgs)
+    meta, _ = read_meta(tk)
+    assert meta["Status"] == "open"

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from spine.artifacts import is_stale, read_meta, release, write_meta
+from spine.artifacts import _is_ticket, is_stale, read_meta, release, write_meta
 from spine.model import EXEC_ROOT, SPEC_DIRS, SPEC_ROOT, load_contract, packaged_contract
 
 
@@ -83,8 +83,16 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
         for path in folder.glob("*.md"):
             meta, body = read_meta(path)
             status = meta.get("Status", "")
-            if status and status not in contract.statuses and status not in contract.ticket_statuses:
+            ticket = _is_ticket(path, meta)
+            allowed = contract.ticket_statuses if ticket else contract.statuses
+            if status and status not in allowed:
                 msgs.append(f"REPORT unknown status {status} in {path.name}")
+                if apply:
+                    nxt = "open" if ticket else "ready"
+                    meta["Status"] = nxt
+                    write_meta(path, meta, body)
+                    msgs.append(f"FIX status {path.name} {status} → {nxt}")
+                    meta, body = read_meta(path)
             if is_stale(meta, root=root):
                 msgs.append(f"STALE claim on {path.name}")
                 if apply:
