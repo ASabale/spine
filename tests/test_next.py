@@ -5,6 +5,7 @@ import pytest
 from spine.artifacts import board, claim, new_ticket, new_work_item, next_lines, read_meta, release, set_status, write_meta
 from spine.cli import main
 from spine.doctor import doctor
+from spine.errors import ClaimConflict, InvalidTransition
 from spine.initcmd import init_target
 
 
@@ -30,10 +31,10 @@ def test_ticket_set_status_open_claimed_resolved(tmp_path: Path):
 def test_ticket_set_status_rejects_unknown_and_illegal(tmp_path: Path):
     init_target(tmp_path)
     tk = new_ticket(tmp_path, "Guarded")
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidTransition):
         set_status(tmp_path, str(tk), "doing")
     set_status(tmp_path, str(tk), "resolved")
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidTransition):
         set_status(tmp_path, str(tk), "open")
 
 
@@ -46,7 +47,7 @@ def test_claim_sets_ticket_claimed(tmp_path: Path, monkeypatch):
     assert meta["Status"] == "claimed"
     assert meta["Owner"] == "ada"
     assert meta["Claimed-at"]
-    with pytest.raises(ValueError, match="already claimed"):
+    with pytest.raises(ClaimConflict, match="already claimed"):
         claim(tmp_path, str(tk))
 
 
@@ -69,8 +70,7 @@ def test_cli_ticket_set_status(tmp_path: Path, monkeypatch):
     tk = "docs/spine/tickets/01-verb-path.md"
     assert main(["set-status", tk, "claimed"]) == 0
     assert read_meta(tmp_path / tk)[0]["Status"] == "claimed"
-    assert main(["set-status", tk, "reviewing"]) == 1
-
+    assert main(["set-status", tk, "reviewing"]) == 3
 
 def test_next_prefers_inflight_over_ticket(tmp_path: Path):
     init_target(tmp_path)

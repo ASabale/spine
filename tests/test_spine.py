@@ -8,6 +8,7 @@ import pytest
 from spine.artifacts import board, claim, link, new_ticket, new_work_item, read_meta, release, set_status, write_meta
 from spine.cli import main
 from spine.doctor import doctor
+from spine.errors import ClaimConflict, EvaluationInvalid, InvalidTransition, ReviewInvalid
 from spine.initcmd import init_target
 from spine.model import load_contract
 
@@ -34,9 +35,9 @@ def test_init_and_machine(tmp_path: Path, monkeypatch):
     wi = new_work_item(tmp_path, "Ship CLI", "software")
     set_status(tmp_path, str(wi), "doing")
     set_status(tmp_path, str(wi), "checking")
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidTransition):
         set_status(tmp_path, str(wi), "done")
-    with pytest.raises(ValueError, match="evals"):
+    with pytest.raises(EvaluationInvalid, match="evals"):
         set_status(tmp_path, str(wi), "reviewing")
     (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text("ok\n", encoding="utf-8")
     set_status(tmp_path, str(wi), "reviewing")
@@ -84,7 +85,7 @@ def test_claim_conflict_and_release(tmp_path: Path, monkeypatch):
     wi = new_work_item(tmp_path, "Claim me")
     claim(tmp_path, str(wi))
     monkeypatch.setenv("SPINE_USER", "bob")
-    with pytest.raises(ValueError, match="already claimed"):
+    with pytest.raises(ClaimConflict, match="already claimed"):
         claim(tmp_path, str(wi))
     release(tmp_path, str(wi))
     claim(tmp_path, str(wi))
@@ -149,7 +150,7 @@ def test_non_software_doing_to_done_needs_deliverable(tmp_path: Path):
     init_target(tmp_path)
     wi = new_work_item(tmp_path, "Write a note", "default")
     set_status(tmp_path, str(wi), "doing")
-    with pytest.raises(ValueError, match="Deliverable"):
+    with pytest.raises(InvalidTransition, match="Deliverable"):
         set_status(tmp_path, str(wi), "done")
 
 
@@ -157,7 +158,7 @@ def test_software_doing_to_done_rejected(tmp_path: Path):
     init_target(tmp_path)
     wi = new_work_item(tmp_path, "Ship CLI", "software")
     set_status(tmp_path, str(wi), "doing")
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidTransition):
         set_status(tmp_path, str(wi), "done")
 
 
@@ -200,7 +201,7 @@ def test_software_needs_eval_and_review_proof(tmp_path: Path):
     set_status(tmp_path, str(wi), "checking")
     (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text("eval\n", encoding="utf-8")
     set_status(tmp_path, str(wi), "reviewing")
-    with pytest.raises(ValueError, match="reviews"):
+    with pytest.raises(ReviewInvalid, match="reviews"):
         set_status(tmp_path, str(wi), "done")
     (tmp_path / ".spine/reviews" / f"{wi.stem}.md").write_text("ship\n", encoding="utf-8")
     set_status(tmp_path, str(wi), "done")

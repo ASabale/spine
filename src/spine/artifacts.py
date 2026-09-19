@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from spine import __version__
+from spine.errors import ClaimConflict
 
 from spine.model import (
     EXEC_ROOT,
@@ -142,42 +143,9 @@ def _is_ticket(path: Path, meta: dict[str, str]) -> bool:
 
 
 def set_status(root: Path, spec: str, nxt: str) -> Path:
-    contract = load_contract(root)
-    path = resolve_artifact(root, spec)
-    meta, body = read_meta(path)
-    cur = meta.get("Status", "")
-    if _is_ticket(path, meta):
-        if nxt not in contract.ticket_statuses:
-            raise ValueError(f"unknown ticket status {nxt}")
-        if not contract.ticket_allowed(cur, nxt):
-            raise ValueError(f"illegal ticket transition {cur} → {nxt}")
-        meta["Status"] = nxt
-        if nxt == "open":
-            meta["Owner"] = ""
-            meta["Claimed-at"] = ""
-        write_meta(path, meta, body)
-        return path
-    if nxt not in contract.statuses:
-        raise ValueError(f"unknown status {nxt}")
-    profile = (meta.get("Profile") or "software").lower()
-    software = profile == "software"
-    if cur == "doing" and nxt == "done" and not software:
-        if not _deliverable_exists(root, meta):
-            raise ValueError("non-software doing → done needs an existing Deliverable path")
-    elif not contract.allowed(cur, nxt):
-        raise ValueError(f"illegal transition {cur} → {nxt}")
-    if software and cur == "checking" and nxt == "reviewing":
-        if not _has_proof(root, "evals", path.stem):
-            raise ValueError("software checking → reviewing needs proof under .spine/evals/")
-    if nxt == "done" and software:
-        required = contract.software_required()
-        if cur not in {"reviewing"} and "reviewing" in required:
-            raise ValueError("software profile requires reviewing before done")
-        if not _has_proof(root, "reviews", path.stem):
-            raise ValueError("software reviewing → done needs proof under .spine/reviews/")
-    meta["Status"] = nxt
-    write_meta(path, meta, body)
-    return path
+    from spine.engine import advance
+
+    return advance(root, spec, nxt).path
 
 
 def claim(root: Path, spec: str) -> Path:
@@ -186,7 +154,7 @@ def claim(root: Path, spec: str) -> Path:
     owner = meta.get("Owner") or ""
     claimed_at = meta.get("Claimed-at") or ""
     if owner and claimed_at and not _stale(claimed_at, root=root):
-        raise ValueError(f"already claimed by {owner} at {claimed_at}")
+        raise ClaimConflict(f"already claimed by {owner} at {claimed_at}")
     meta["Owner"] = identity()
     meta["Claimed-at"] = _now().isoformat()
     if meta.get("Status") == "open":

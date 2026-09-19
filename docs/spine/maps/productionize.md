@@ -42,6 +42,8 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   still hardcoded until ticket 03.
 - P1 contract machine (2026-09-19): tickets live under `contract.yaml` `tickets:`;
   `Contract.ticket_allowed` is the only ticket transition table.
+- P1 transition engine (2026-09-19): `engine.advance` is the only status mutation;
+  typed SpineError exit codes 0–8. Event log / claim-held / HITL-in-advance deferred.
 
 ## Not yet specified
 
