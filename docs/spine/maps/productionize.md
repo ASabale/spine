@@ -57,6 +57,10 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   event-log drift, stale claims, dangling links, and resolved/missing
   `Blocked by` (path or filename). FIX lines include why. CLI exit 8 when
   unrepaired.
+- P3 next + run (2026-09-19): inflight order is `contract.next.inflight`.
+  `run` is a list of `{cmd, hitl}` mappings; HITL-only states have `run=[]`.
+  `spine run` prints the first command. Same state → same next.
+
 
 ## Not yet specified
 

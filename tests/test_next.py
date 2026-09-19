@@ -160,7 +160,7 @@ def test_cli_next_json_run_keys(tmp_path: Path, monkeypatch, capsys):
     assert data["cwd"] == str(tmp_path)
     assert data["next"]
     assert "run" in data
-    assert all(x.startswith("spine ") for x in data["run"])
+    assert all(isinstance(x, dict) and str(x.get("cmd", "")).startswith("spine ") for x in data["run"])
 
 
 def test_cli_status_json_has_board(tmp_path: Path, monkeypatch, capsys):

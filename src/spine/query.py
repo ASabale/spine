@@ -121,6 +121,20 @@ def next_lines(root: Path) -> list[str]:
     ]
 
 
+def _run_plan(lines: list[str]) -> tuple[list[dict[str, object]], bool]:
+    """Executable spine commands plus whether a human gate is in the way."""
+    run: list[dict[str, object]] = []
+    hitl = False
+    for line in lines:
+        if line.startswith("#"):
+            continue
+        if line.startswith("spine ") and "..." not in line:
+            run.append({"cmd": line, "hitl": False})
+        else:
+            hitl = True
+    return run, hitl
+
+
 def status_payload(root: Path) -> dict[str, object]:
     """Machine-readable board. `run` is the spine commands an agent may execute."""
     lines = next_lines(root)
@@ -157,19 +171,14 @@ def status_payload(root: Path) -> dict[str, object]:
                 )
                 if status == "open" and not _ticket_blocked(meta) and not (meta.get("Owner") or "").strip():
                     frontier.append(p.name)
+    run, hitl = _run_plan(lines)
     return {
         "cwd": str(root),
         "user": identity(),
         "version": __version__,
         "next": lines,
-        "run": [
-            line
-            for line in lines
-            if line.startswith("spine ") and "..." not in line
-        ],
-        "hitl": any(
-            not line.startswith("spine ") and not line.startswith("#") for line in lines
-        ),
+        "run": run,
+        "hitl": hitl,
         "work_items": work_items,
         "tickets": tickets,
         "frontier": frontier,

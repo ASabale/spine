@@ -211,7 +211,9 @@ def main(argv: list[str] | None = None) -> int:
                 first = (payload["next"] or ["nothing to run"])[0]
                 print(f"error: {first}", file=sys.stderr)
                 return 2
-            print(run[0])
+            step = run[0]
+            print(step["cmd"] if isinstance(step, dict) else step)
+
         elif args.cmd == "release":
             _emit_payload_or_next(root, as_json, str(release(root, args.target)))
         elif args.cmd == "set-status":
