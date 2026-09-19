@@ -21,6 +21,7 @@ from spine.artifacts import (
     status_payload,
 )
 from spine.doctor import doctor, doctor_ok
+from spine.errors import SpineError, exit_code_for
 from spine.evolve import evolve, install_wires, set_pack
 from spine.initcmd import init_target
 from spine.model import SPEC_ROOT
@@ -259,9 +260,12 @@ def main(argv: list[str] | None = None) -> int:
         else:
             parser.error("unknown command")
             return 2
+    except SpineError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return exit_code_for(exc)
     except (ValueError, FileNotFoundError) as exc:
         print(f"error: {exc}", file=sys.stderr)
-        return 1
+        return exit_code_for(exc)
     return 0
 
 

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import yaml
 
+from spine.errors import ContractError
 from spine.resources import read_data
 
 SPEC_ROOT = Path("docs/spine")
@@ -17,9 +18,6 @@ HARNESS_SKILL_ROOTS = (
     Path(".cursor/skills"),
 )
 
-
-class ContractError(ValueError):
-    pass
 
 
 @dataclass(frozen=True)
