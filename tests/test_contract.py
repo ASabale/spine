@@ -26,6 +26,7 @@ def test_packaged_contract_validates():
     assert c.ticket_allowed("open", "claimed")
     assert c.ticket_allowed("claimed", "open")
     assert not c.ticket_allowed("resolved", "open")
+    assert c.inflight == ["reviewing", "checking", "doing", "changes-requested"]
 
 
 def test_no_hardcoded_ticket_machine():

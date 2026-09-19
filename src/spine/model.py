@@ -114,9 +114,30 @@ class Contract:
         t_missing = [s for s in t_statuses if s not in t_transitions]
         if t_missing:
             raise ContractError(f"ticket status missing from transitions: {t_missing}")
+        nxt = raw.get("next") or {}
+        if nxt:
+            if not isinstance(nxt, dict):
+                raise ContractError("next must be a mapping")
+            inflight = nxt.get("inflight")
+            if inflight is not None:
+                if not isinstance(inflight, list) or not inflight or not all(
+                    isinstance(s, str) and s for s in inflight
+                ):
+                    raise ContractError("next.inflight must be a non-empty list of strings")
+                for item in inflight:
+                    if item not in status_set:
+                        raise ContractError(f"next.inflight unknown status {item}")
 
     def software_required(self) -> list[str]:
         return list(self.raw["profiles"]["software"]["required_before_done"])
+
+    @property
+    def inflight(self) -> list[str]:
+        nxt = self.raw.get("next") or {}
+        items = nxt.get("inflight")
+        if isinstance(items, list) and items:
+            return list(items)
+        return [s for s in self.statuses if s not in {"ready", "done"}]
 
     def next_gates(self, current: str, *, software: bool = True) -> list[str]:
         nxt = list(self.transitions.get(current, []))

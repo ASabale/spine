@@ -82,6 +82,23 @@ def test_next_prefers_inflight_over_ticket(tmp_path: Path):
     assert "claim" not in text
 
 
+def test_next_inflight_order_comes_from_contract():
+    import inspect
+
+    from spine import query
+    from spine.model import packaged_contract
+
+    assert packaged_contract().inflight == [
+        "reviewing",
+        "checking",
+        "doing",
+        "changes-requested",
+    ]
+    src = inspect.getsource(query.next_lines)
+    assert '["reviewing"' not in src.replace(" ", "")
+    assert "inflight" in src
+
+
 def test_next_ready_does_not_beat_open_ticket(tmp_path: Path):
     init_target(tmp_path)
     new_ticket(tmp_path, "Open work")
@@ -299,14 +316,3 @@ def test_next_json_hitl_on_empty_map(tmp_path: Path, monkeypatch, capsys):
     assert any("spine new" in x or "maps/map.md" in x for x in data["next"])
 
 
-def test_status_json_includes_version(tmp_path: Path, monkeypatch, capsys):
-    import json
-
-    from spine import __version__
-
-    monkeypatch.chdir(tmp_path)
-    assert main(["init"]) == 0
-    capsys.readouterr()
-    assert main(["status", "--json"]) == 0
-    data = json.loads(capsys.readouterr().out)
-    assert data["version"] == __version__

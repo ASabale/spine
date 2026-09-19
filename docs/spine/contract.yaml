@@ -41,3 +41,9 @@ tickets:
 gates:
   eval: [passed, command, when, revision]
   review: [verdict, by, when, revision, evidence]
+next:
+  inflight:
+    - reviewing
+    - checking
+    - doing
+    - changes-requested

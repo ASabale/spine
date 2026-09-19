@@ -88,7 +88,7 @@ def next_lines(root: Path) -> list[str]:
         for p in sorted(wi_dir.glob("*.md")):
             meta, _ = read_meta(p)
             items.append((meta.get("Status", ""), p, meta))
-    inflight = ["reviewing", "checking", "doing", "changes-requested"]
+    inflight = load_contract(root).inflight
     active = [row for row in items if row[0] in inflight]
     active.sort(key=lambda row: inflight.index(row[0]))
     if active:
