@@ -2,7 +2,7 @@
 
 ## Current State
 
-Tree version **0.2.0**. Sit-down: `spine prime`. Exec: `spine run`. Mutating verbs print `## Next`; `--json` prints `status_payload`. Prime JSON includes `cwd`, `ok`, `inited`.
+Tree version **0.2.0**. Published as **spine-cli 0.2.0** on PyPI and GitHub (`v0.2.0`). Sit-down: `spine prime`. Exec: `spine run`. Mutating verbs print `## Next`; `--json` prints `status_payload`. Prime JSON includes `cwd`, `ok`, `inited`.
 
 Product ticket `01-dogfood-this-target` stays open HITL.
 

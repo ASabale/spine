@@ -20,10 +20,10 @@ uv run pytest
 ## Stranger loop
 
 1. `spine init` — spec dirs, starter map, `.spine/`, gitignore, binder skills, default `wires.yaml`
-2. `spine wire --install` — `npx skills add mattpocock/skills` (skills.sh). Needs `npx`.
-3. `spine doctor` — recover drift (stale claims and broken links auto-fix; gitignore, unknown statuses, missing spec files report-only)
-4. `spine evolve` — refresh binder from the wheel; `npx skills update` if present
-5. `spine next` — the next command (`spine status` is the full board; both accept `--json`)
+2. `spine prime` — agent sit-down (doctor + next as JSON). Humans: `spine doctor` then `spine next` / `spine status`
+3. `spine run` — print the first executable `spine …` command
+4. `spine wire --install` — `npx skills add mattpocock/skills` (skills.sh). Needs `npx`.
+5. `spine evolve` — refresh binder from the wheel; `npx skills update` if present
 
 ## Verbs
 

@@ -3,11 +3,10 @@
 Sit-down in this directory:
 
 ```
-spine doctor
-spine next
+spine prime
 ```
 
-The `## Next` block is the next command. CLI owns status, owner, claim, links, numbers. Agents own content.
+Humans can run `spine doctor` then `spine next` / `spine status`. The `## Next` block is the next command. CLI owns status, owner, claim, links, numbers. Agents own content.
 
 Checked-in **spec tier** (this tree):
 
