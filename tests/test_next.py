@@ -316,3 +316,14 @@ def test_next_json_hitl_on_empty_map(tmp_path: Path, monkeypatch, capsys):
     assert any("spine new" in x or "maps/map.md" in x for x in data["next"])
 
 
+def test_status_json_includes_version(tmp_path: Path, monkeypatch, capsys):
+    import json
+
+    from spine import __version__
+
+    monkeypatch.chdir(tmp_path)
+    assert main(["init"]) == 0
+    capsys.readouterr()
+    assert main(["status", "--json"]) == 0
+    data = json.loads(capsys.readouterr().out)
+    assert data["version"] == __version__
