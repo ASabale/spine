@@ -2,9 +2,9 @@
 
 Harness-agnostic process spine. Planning is a map + tickets. Execution is a work item. Files in the **target** are the source of truth.
 
-MIT. CLI command `spine`. PyPI name `spine-cli` (not published yet).
+MIT. CLI command `spine`. PyPI: [spine-cli](https://pypi.org/project/spine-cli/). GitHub: [ASabale/spine](https://github.com/ASabale/spine).
 
-## Install (once published)
+## Install
 
 ```
 uvx --from spine-cli spine init
