@@ -38,3 +38,6 @@ tickets:
     open: [claimed, resolved]
     claimed: [resolved, open]
     resolved: []
+gates:
+  eval: [passed, command, when, revision]
+  review: [verdict, by, when, revision, evidence]

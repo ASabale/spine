@@ -5,17 +5,13 @@ from pathlib import Path
 
 from spine.artifacts import (
     _deliverable_exists,
-    _has_proof,
     _is_ticket,
     read_meta,
     resolve_artifact,
     write_meta,
 )
-from spine.errors import (
-    EvaluationInvalid,
-    InvalidTransition,
-    ReviewInvalid,
-)
+from spine.errors import InvalidTransition
+from spine.gates import require_eval, require_review
 from spine.model import load_contract
 
 
@@ -64,14 +60,12 @@ def advance(
     elif not contract.allowed(cur, nxt):
         raise InvalidTransition(f"illegal transition {cur} → {nxt}")
     if software and cur == "checking" and nxt == "reviewing":
-        if not _has_proof(root, "evals", path.stem):
-            raise EvaluationInvalid("software checking → reviewing needs proof under .spine/evals/")
+        require_eval(root, path.stem)
     if nxt == "done" and software:
         required = contract.software_required()
         if cur not in {"reviewing"} and "reviewing" in required:
             raise InvalidTransition("software profile requires reviewing before done")
-        if not _has_proof(root, "reviews", path.stem):
-            raise ReviewInvalid("software reviewing → done needs proof under .spine/reviews/")
+        require_review(root, path.stem)
     meta["Status"] = nxt
     write_meta(path, meta, body)
     return AdvanceResult(path=path, previous=cur, status=nxt, changed=True)

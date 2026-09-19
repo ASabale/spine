@@ -44,6 +44,9 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   `Contract.ticket_allowed` is the only ticket transition table.
 - P1 transition engine (2026-09-19): `engine.advance` is the only status mutation;
   typed SpineError exit codes 0–8. Event log / claim-held / HITL-in-advance deferred.
+- P1 real gates (2026-09-19): eval/review are YAML mappings (`passed`/`verdict` +
+  command/when/revision/evidence). Existence-only `_has_proof` is no longer the
+  checking→reviewing / reviewing→done gate. Revision binding is 07.
 
 ## Not yet specified
 
