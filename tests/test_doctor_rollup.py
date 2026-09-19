@@ -57,3 +57,23 @@ def test_doctor_keeps_blocker_named_by_path(tmp_path: Path):
     meta, _ = read_meta(later)
     assert meta.get("Blocked by") == rel
 
+
+def test_doctor_clears_resolved_blocker(tmp_path: Path):
+    init_target(tmp_path)
+    first = new_ticket(tmp_path, "First")
+    later = new_ticket(tmp_path, "Later")
+    meta, body = read_meta(first)
+    meta["Status"] = "resolved"
+    write_meta(first, meta, body)
+    meta, body = read_meta(later)
+    meta["Blocked by"] = "01"
+    write_meta(later, meta, body)
+    msgs = doctor(tmp_path, apply=False)
+    assert any("resolved" in m.lower() and later.name in m for m in msgs)
+    meta, _ = read_meta(later)
+    assert meta.get("Blocked by") == "01"
+    msgs = doctor(tmp_path, apply=True)
+    assert any("FIX cleared Blocked by" in m for m in msgs)
+    meta, _ = read_meta(later)
+    assert not (meta.get("Blocked by") or "").strip()
+

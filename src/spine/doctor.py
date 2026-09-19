@@ -13,23 +13,26 @@ def _blocker_number(value: str) -> int | None:
     return None
 
 
-def _blocker_exists(root: Path, value: str) -> bool:
+def _find_blocker(root: Path, value: str) -> Path | None:
     raw = value.strip()
     if not raw:
-        return False
+        return None
     tickets = root / SPEC_ROOT / "tickets"
     if not tickets.is_dir():
-        return False
+        return None
     cand = root / raw
     if cand.exists() and cand.parent == tickets:
-        return True
+        return cand
     named = tickets / Path(raw).name
     if named.exists():
-        return True
+        return named
     num = _blocker_number(raw)
     if num is None:
-        return False
-    return any(p.name.split("-", 1)[0] == f"{num:02d}" for p in tickets.glob("*.md"))
+        return None
+    for p in tickets.glob("*.md"):
+        if p.name.split("-", 1)[0] == f"{num:02d}":
+            return p
+    return None
 
 
 def doctor_ok(msgs: list[str]) -> bool:
@@ -104,12 +107,21 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
 
             blocked = (meta.get("Blocked by") or "").strip()
             if blocked:
-                if not _blocker_exists(root, blocked):
+                blocker = _find_blocker(root, blocked)
+                if blocker is None:
                     msgs.append(f"BROKEN blocker {path.name} → {blocked}")
                     if apply:
                         meta["Blocked by"] = ""
                         write_meta(path, meta, body)
                         msgs.append(f"FIX cleared Blocked by on {path.name}")
+                else:
+                    bmeta, _ = read_meta(blocker)
+                    if (bmeta.get("Status") or "") == "resolved":
+                        msgs.append(f"RESOLVED blocker {path.name} → {blocked}")
+                        if apply:
+                            meta["Blocked by"] = ""
+                            write_meta(path, meta, body)
+                            msgs.append(f"FIX cleared Blocked by on {path.name}")
 
     out = root / EXEC_ROOT / "doctor" / "last.txt"
     out.parent.mkdir(parents=True, exist_ok=True)
