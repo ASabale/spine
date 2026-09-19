@@ -47,6 +47,9 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
 - P1 real gates (2026-09-19): eval/review are YAML mappings (`passed`/`verdict` +
   command/when/revision/evidence). Existence-only `_has_proof` is no longer the
   checking→reviewing / reviewing→done gate. Revision binding is 07.
+- P2 layering (2026-09-19): `query.py` owns next/board/status_payload;
+  `FileStore` + `CoordStore` (kv only) are the persistence seam. `engine.py`
+  stays store-agnostic. Claims table is ticket 10.
 
 ## Not yet specified
 
