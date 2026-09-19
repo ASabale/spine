@@ -2,10 +2,10 @@
 
 Type: work-item
 Profile: software
-Status: ready
-Owner:
-Claimed-at:
-Links:
+Status: done
+Owner: ASabale
+Claimed-at: 2026-09-19T06:47:22.304816+00:00
+Links: 
 Deliverable: src/spine/doctor.py
 
 ## Intent

@@ -6,6 +6,13 @@ from spine.artifacts import is_stale, read_meta, release, write_meta
 from spine.model import EXEC_ROOT, SPEC_DIRS, SPEC_ROOT, load_contract, packaged_contract
 
 
+def _blocker_number(value: str) -> int | None:
+    head = value.strip().split("-", 1)[0].split("/", 1)[-1]
+    if head.isdigit():
+        return int(head)
+    return None
+
+
 def doctor(root: Path, *, apply: bool = True) -> list[str]:
     msgs: list[str] = []
     contract = load_contract(root)
@@ -63,6 +70,23 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
                 meta["Links"] = ", ".join(kept)
                 write_meta(path, meta, body)
                 msgs.append(f"FIX links on {path.name}")
+                meta, body = read_meta(path)
+
+            blocked = (meta.get("Blocked by") or "").strip()
+            if blocked:
+                num = _blocker_number(blocked)
+                tickets = root / SPEC_ROOT / "tickets"
+                exists = False
+                if num is not None and tickets.is_dir():
+                    exists = any(
+                        p.name.split("-", 1)[0] == f"{num:02d}" for p in tickets.glob("*.md")
+                    )
+                if not exists:
+                    msgs.append(f"BROKEN blocker {path.name} → {blocked}")
+                    if apply:
+                        meta["Blocked by"] = ""
+                        write_meta(path, meta, body)
+                        msgs.append(f"FIX cleared Blocked by on {path.name}")
 
     out = root / EXEC_ROOT / "doctor" / "last.txt"
     out.parent.mkdir(parents=True, exist_ok=True)

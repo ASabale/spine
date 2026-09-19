@@ -2,10 +2,10 @@
 
 Type: work-item
 Profile: software
-Status: ready
-Owner:
-Claimed-at:
-Links:
+Status: done
+Owner: ASabale
+Claimed-at: 2026-09-19T06:47:22.571821+00:00
+Links: 
 Deliverable: src/spine/data/binder
 
 ## Intent

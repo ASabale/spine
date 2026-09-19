@@ -1,6 +1,6 @@
 [project]
 name = "spine-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "Harness-agnostic process spine CLI"
 readme = "spec.md"
 license = { text = "MIT" }

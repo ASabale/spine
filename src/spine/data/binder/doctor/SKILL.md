@@ -1,16 +1,15 @@
 ---
 name: doctor
-description: Recover mechanical drift in a spine target. Use at session start and when files look wrong.
+description: Recover spine drift. Use at session start and when artifacts look wrong.
 ---
 
 # doctor
+
+Run the CLI. Done when `spine doctor` prints `ok` or every reported line is understood.
 
 ```
 spine doctor
 spine evolve
 ```
 
-Doctor auto-fixes stale claims, CLI-owned links, and rollups. It reports unknown statuses, missing spec files, gitignore drift. Never rewrite content sections by hand to fake a fix.
-
-## Gate
-Recovery loop. Not a harness hook.
+Doctor applies stale claims, dangling links, and missing `Blocked by` rollups. It reports unknown statuses, missing spec files, and gitignore drift. Craft refresh: `spine evolve`.

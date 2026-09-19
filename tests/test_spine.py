@@ -242,4 +242,11 @@ def test_install_cmd_uses_wired_skills():
     assert "vercel-labs/skills" in packs
     assert "obra/superpowers" in packs
     assert "anthropics/skills" in packs
+    assert "affaan-m/ecc" in packs
+    ecc_skills = dict(jobs)["affaan-m/ecc"]
+    assert "eval-harness" in ecc_skills
+    assert "verification-loop" in ecc_skills
+    assert "e2e-testing" in ecc_skills
+    assert "security-review" in ecc_skills
+    assert "context-budget" in ecc_skills
 
