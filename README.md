@@ -1,0 +1,36 @@
+# spine
+
+Harness-agnostic process spine. Planning is a map + tickets. Execution is a work item. Files in the **target** are the source of truth.
+
+MIT. CLI command `spine`. PyPI name `spine-cli` (not published yet).
+
+## Install (once published)
+
+```
+uvx --from spine-cli spine init
+```
+
+From this source tree:
+
+```
+uv run spine init
+uv run pytest
+```
+
+## Stranger loop
+
+1. `spine init` — spec dirs, starter map, `.spine/`, gitignore, binder skills, default `wires.yaml`
+2. `spine wire --install` — `npx skills add mattpocock/skills` (skills.sh). Needs `npx`.
+3. `spine doctor` — recover drift (stale claims and broken links auto-fix; gitignore, unknown statuses, missing spec files report-only)
+4. `spine evolve` — refresh binder from the wheel; `npx skills update` if present
+5. `spine status` — work items with next gate, tickets, frontier
+
+## Verbs
+
+`init` `status` `new` `claim` `release` `set-status` `link` `doctor` `wire` `evolve`
+
+`spine new --title "…" --ticket --work-item` mints both. Same command with a kind: `spine new ticket --title "…"`.
+
+Craft skills are **not** vendored. Discover them on [skills.sh](https://www.skills.sh/). Default pack: [mattpocock/skills](https://www.skills.sh/mattpocock/skills).
+
+See [spec.md](spec.md).

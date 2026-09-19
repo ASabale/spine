@@ -1,0 +1,31 @@
+version: 1
+statuses:
+  - ready
+  - doing
+  - checking
+  - reviewing
+  - done
+  - changes-requested
+transitions:
+  ready: [doing]
+  doing: [checking]
+  checking: [reviewing]
+  reviewing: [done, changes-requested]
+  changes-requested: [doing]
+  done: []
+hitl:
+  - creating-work-item
+  - reviewing
+agent_drivable:
+  - doing
+  - checking
+profiles:
+  software:
+    required_before_done:
+      - checking
+      - reviewing
+  default:
+    allow_doing_to_done: true
+claim:
+  stale_hours: 4
+  owner_env: SPINE_USER

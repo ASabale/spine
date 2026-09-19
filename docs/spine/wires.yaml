@@ -1,0 +1,26 @@
+# Binder concern → skills.sh craft skills. Not vendored; installed via `npx skills`.
+source: skills.sh
+default_pack: mattpocock/skills
+concerns:
+  wayfind:
+    pack: mattpocock/skills
+    skills: [wayfinder, grilling, domain-modeling]
+  new:
+    pack: mattpocock/skills
+    skills: [grill-me, wayfinder]
+  next:
+    pack: mattpocock/skills
+    skills: [ask-matt, implement]
+  doctor:
+    pack: null
+    skills: []
+    cli: [spine doctor]
+  build:
+    pack: mattpocock/skills
+    skills: [implement, tdd, codebase-design]
+  eval:
+    pack: mattpocock/skills
+    skills: [qa]
+  review:
+    pack: mattpocock/skills
+    skills: [code-review]
