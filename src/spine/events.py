@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from datetime import datetime, timezone
@@ -35,3 +36,7 @@ def append_event(
         fh.flush()
         os.fsync(fh.fileno())
     return path
+
+
+def content_revision(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()

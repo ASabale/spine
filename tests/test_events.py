@@ -1,8 +1,9 @@
+import hashlib
 import inspect
 import json
 from pathlib import Path
 
-from spine.events import append_event
+from spine.events import append_event, content_revision
 from spine.initcmd import init_target
 
 
@@ -59,3 +60,17 @@ def test_append_event_calls_fsync():
 
     src = inspect.getsource(events)
     assert "fsync" in src
+
+
+def test_content_revision_is_sha256(tmp_path: Path):
+    path = tmp_path / "item.md"
+    path.write_bytes(b"hello")
+    assert content_revision(path) == hashlib.sha256(b"hello").hexdigest()
+
+
+def test_content_revision_changes_when_bytes_change(tmp_path: Path):
+    path = tmp_path / "item.md"
+    path.write_text("a\n", encoding="utf-8")
+    first = content_revision(path)
+    path.write_text("b\n", encoding="utf-8")
+    assert content_revision(path) != first
