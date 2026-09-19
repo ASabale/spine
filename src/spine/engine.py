@@ -11,6 +11,7 @@ from spine.artifacts import (
     write_meta,
 )
 from spine.errors import InvalidTransition
+from spine.events import append_event
 from spine.gates import require_eval, require_review
 from spine.model import load_contract
 
@@ -32,7 +33,6 @@ def advance(
     reason: str = "",
     run_id: str = "",
 ) -> AdvanceResult:
-    # actor/reason/run_id are accepted and ignored (event log is a later ticket).
     contract = load_contract(root)
     path = resolve_artifact(root, spec)
     meta, body = read_meta(path)
@@ -49,6 +49,15 @@ def advance(
             meta["Owner"] = ""
             meta["Claimed-at"] = ""
         write_meta(path, meta, body)
+        append_event(
+            root,
+            actor=actor,
+            from_status=cur,
+            to_status=nxt,
+            revision="",
+            run_id=run_id,
+            spec=spec,
+        )
         return AdvanceResult(path=path, previous=cur, status=nxt, changed=True)
     if nxt not in contract.statuses:
         raise InvalidTransition(f"unknown status {nxt}")
@@ -68,4 +77,13 @@ def advance(
         require_review(root, path.stem)
     meta["Status"] = nxt
     write_meta(path, meta, body)
+    append_event(
+        root,
+        actor=actor,
+        from_status=cur,
+        to_status=nxt,
+        revision="",
+        run_id=run_id,
+        spec=spec,
+    )
     return AdvanceResult(path=path, previous=cur, status=nxt, changed=True)
