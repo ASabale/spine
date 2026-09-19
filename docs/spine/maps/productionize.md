@@ -67,6 +67,8 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   harness, 100k next < 500ms and claim < 100ms.
 - P5 release (2026-09-19): `make release` is the gated path. `spine migrate`
   dry-run/apply/rollback. CI runs the gate. Path/symlink boundary + no shell=True.
+- P6 dogfood (2026-09-19): full route with crash recovery and a second
+  worker. Example: docs/spine/examples/dogfood.md. Test: tests/test_dogfood.py.
 
 
 ## Not yet specified

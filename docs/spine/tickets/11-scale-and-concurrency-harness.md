@@ -2,7 +2,7 @@
 
 Type: task
 Status: resolved
-Blocked by: 10-atomic-claims-and-concurrency-model.md
+Blocked by: 
 Owner: 
 Claimed-at: 
 

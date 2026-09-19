@@ -1,8 +1,8 @@
 # Dogfood spine on spine
 
 Type: task
-Status: open
-Blocked by: 12-release-ci-security-and-migration.md
+Status: resolved
+Blocked by: 
 Owner: 
 Claimed-at: 
 
@@ -15,3 +15,11 @@ captured as the canonical example in the docs. This is the acceptance proof of t
 (B§23: the first dogfood target is spine's own repo).
 
 Resolved = the e2e example runs green and is the documented proof.
+
+## Answer
+
+This repo is a spine target. The canonical e2e is
+`docs/spine/examples/dogfood.md`, automated by `tests/test_dogfood.py`:
+claim → doing → checking, crash (frontmatter reset, doctor restores from the
+event log), a second worker gets `ClaimConflict`, real eval + review bound to
+`content_revision`, then `done`.
