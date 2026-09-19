@@ -50,6 +50,9 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
 - P2 layering (2026-09-19): `query.py` owns next/board/status_payload;
   `FileStore` + `CoordStore` (kv only) are the persistence seam. `engine.py`
   stays store-agnostic. Claims table is ticket 10.
+- P3 event log + revision binding (2026-09-19): `.spine/events.jsonl` is
+  append-only JSONL from `advance`; `content_revision` hashes the work-item
+  body; eval/review must match each other and that digest.
 
 ## Not yet specified
 

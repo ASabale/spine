@@ -10,8 +10,8 @@ from spine.artifacts import (
     resolve_artifact,
     write_meta,
 )
-from spine.errors import InvalidTransition, ReviewInvalid
-from spine.events import append_event
+from spine.errors import EvaluationInvalid, InvalidTransition, ReviewInvalid
+from spine.events import append_event, content_revision
 from spine.gates import require_eval, require_review
 from spine.model import load_contract
 
@@ -39,6 +39,7 @@ def advance(
     cur = meta.get("Status", "")
     if cur == nxt:
         return AdvanceResult(path=path, previous=cur, status=nxt, changed=False)
+    digest = content_revision(path)
     if _is_ticket(path, meta):
         if nxt not in contract.ticket_statuses:
             raise InvalidTransition(f"unknown ticket status {nxt}")
@@ -54,7 +55,7 @@ def advance(
             actor=actor,
             from_status=cur,
             to_status=nxt,
-            revision="",
+            revision=digest,
             run_id=run_id,
             spec=spec,
         )
@@ -69,7 +70,11 @@ def advance(
     elif not contract.allowed(cur, nxt):
         raise InvalidTransition(f"illegal transition {cur} → {nxt}")
     if software and cur == "checking" and nxt == "reviewing":
-        require_eval(root, path.stem)
+        evaluation = require_eval(root, path.stem)
+        if evaluation["revision"] != digest:
+            raise EvaluationInvalid(
+                f"eval revision {evaluation['revision']!r} != content {digest!r}"
+            )
     if nxt == "done" and software:
         required = contract.software_required()
         if cur not in {"reviewing"} and "reviewing" in required:
@@ -80,6 +85,14 @@ def advance(
             raise ReviewInvalid(
                 f"eval revision {evaluation['revision']!r} != review revision {review['revision']!r}"
             )
+        if evaluation["revision"] != digest:
+            raise EvaluationInvalid(
+                f"eval revision {evaluation['revision']!r} != content {digest!r}"
+            )
+        if review["revision"] != digest:
+            raise ReviewInvalid(
+                f"review revision {review['revision']!r} != content {digest!r}"
+            )
     meta["Status"] = nxt
     write_meta(path, meta, body)
     append_event(
@@ -87,7 +100,7 @@ def advance(
         actor=actor,
         from_status=cur,
         to_status=nxt,
-        revision="",
+        revision=digest,
         run_id=run_id,
         spec=spec,
     )

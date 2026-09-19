@@ -27,6 +27,14 @@ def test_filestore_atomic_write(tmp_path: Path):
     assert path.read_text(encoding="utf-8") == "second\n"
 
 
+def test_filestore_atomic_write_fsyncs():
+    import inspect
+
+    from spine.store import FileStore
+
+    assert "fsync" in inspect.getsource(FileStore.atomic_write)
+
+
 def test_coordstore_survives_reopen(tmp_path: Path):
     init_target(tmp_path)
     a = CoordStore(tmp_path)

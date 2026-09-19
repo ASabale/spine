@@ -9,6 +9,7 @@ from spine.artifacts import board, claim, link, new_ticket, new_work_item, read_
 from spine.cli import main
 from spine.doctor import doctor
 from spine.errors import ClaimConflict, EvaluationInvalid, InvalidTransition, ReviewInvalid
+from spine.events import content_revision
 from spine.initcmd import init_target
 from spine.model import load_contract
 
@@ -39,7 +40,7 @@ def test_init_and_machine(tmp_path: Path, monkeypatch):
         set_status(tmp_path, str(wi), "done")
     with pytest.raises(EvaluationInvalid, match="evals"):
         set_status(tmp_path, str(wi), "reviewing")
-    (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text("""passed: true\ncommand: uv run pytest -q\nwhen: \"2026-09-19T00:00:00+00:00\"\nrevision: testhash\n""", encoding="utf-8")
+    (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text(f"""passed: true\ncommand: uv run pytest -q\nwhen: \"2026-09-19T00:00:00+00:00\"\nrevision: {content_revision(wi)}\n""", encoding="utf-8")
     set_status(tmp_path, str(wi), "reviewing")
     set_status(tmp_path, str(wi), "changes-requested")
     set_status(tmp_path, str(wi), "doing")
@@ -199,11 +200,11 @@ def test_software_needs_eval_and_review_proof(tmp_path: Path):
     wi = new_work_item(tmp_path, "Ship CLI", "software")
     set_status(tmp_path, str(wi), "doing")
     set_status(tmp_path, str(wi), "checking")
-    (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text("""passed: true\ncommand: uv run pytest -q\nwhen: \"2026-09-19T00:00:00+00:00\"\nrevision: testhash\n""", encoding="utf-8")
+    (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text(f"""passed: true\ncommand: uv run pytest -q\nwhen: \"2026-09-19T00:00:00+00:00\"\nrevision: {content_revision(wi)}\n""", encoding="utf-8")
     set_status(tmp_path, str(wi), "reviewing")
     with pytest.raises(ReviewInvalid, match="reviews"):
         set_status(tmp_path, str(wi), "done")
-    (tmp_path / ".spine/reviews" / f"{wi.stem}.md").write_text("""verdict: approve\nby: ada\nwhen: \"2026-09-19T00:00:00+00:00\"\nrevision: testhash\nevidence: two-axis pass\n""", encoding="utf-8")
+    (tmp_path / ".spine/reviews" / f"{wi.stem}.md").write_text(f"""verdict: approve\nby: ada\nwhen: \"2026-09-19T00:00:00+00:00\"\nrevision: {content_revision(wi)}\nevidence: two-axis pass\n""", encoding="utf-8")
     set_status(tmp_path, str(wi), "done")
     meta, _ = read_meta(wi)
     assert meta["Status"] == "done"
