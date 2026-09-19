@@ -1,26 +1,60 @@
-# Binder concern → skills.sh craft skills. Not vendored; installed via `npx skills`.
+# Binder concern → skills.sh craft. Bodies are not vendored.
 source: skills.sh
 default_pack: mattpocock/skills
+# Official live skills from github.com/mattpocock/skills (engineering + productivity).
+# skills.sh still lists older names (qa, to-prd, caveman, …); those are not in the repo.
+extra_packs:
+  vercel-labs/skills:
+    skills: [find-skills]
+    why: directory discovery (hottest skill on skills.sh)
+  anthropics/skills:
+    skills: [skill-creator]
+    why: write new craft/binder skills
+  obra/superpowers:
+    skills: [verification-before-completion, requesting-code-review]
+    why: eval/review discipline that complements Matt's code-review
 concerns:
   wayfind:
     pack: mattpocock/skills
-    skills: [wayfinder, grilling, domain-modeling]
+    skills:
+      - wayfinder
+      - grilling
+      - grill-with-docs
+      - domain-modeling
+      - research
+      - prototype
+      - to-spec
+      - to-tickets
   new:
     pack: mattpocock/skills
-    skills: [grill-me, wayfinder]
+    skills: [grill-me, grill-with-docs, grilling, wayfinder, to-questionnaire]
   next:
     pack: mattpocock/skills
-    skills: [ask-matt, implement]
+    skills: [ask-matt, implement, triage, wait-what]
   doctor:
     pack: null
     skills: []
     cli: [spine doctor]
   build:
     pack: mattpocock/skills
-    skills: [implement, tdd, codebase-design]
+    skills:
+      - implement
+      - tdd
+      - codebase-design
+      - improve-codebase-architecture
+      - diagnosing-bugs
+      - resolving-merge-conflicts
+      - wizard
   eval:
     pack: mattpocock/skills
-    skills: [qa]
+    skills: [tdd, diagnosing-bugs]
   review:
     pack: mattpocock/skills
     skills: [code-review]
+  session:
+    pack: mattpocock/skills
+    skills:
+      - handoff
+      - setup-matt-pocock-skills
+      - teach
+      - writing-for-agents

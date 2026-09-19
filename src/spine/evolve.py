@@ -41,25 +41,39 @@ def skills_for_pack(wires: dict, pack: str) -> list[str]:
     return names
 
 
+def pack_jobs(wires: dict, extra_pack: str | None = None) -> list[tuple[str, list[str]]]:
+    pack = extra_pack or wires.get("default_pack") or "mattpocock/skills"
+    jobs = [(pack, skills_for_pack(wires, pack))]
+    extras = wires.get("extra_packs") or {}
+    if isinstance(extras, dict):
+        for name, spec in extras.items():
+            if not name or name == pack:
+                continue
+            skills = list((spec or {}).get("skills") or []) if isinstance(spec, dict) else []
+            jobs.append((name, skills))
+    return jobs
+
+
 def install_wires(root: Path, *, extra_pack: str | None = None) -> list[str]:
     notes: list[str] = []
     npx = _npx()
     wires = load_wires(root)
-    pack = extra_pack or wires.get("default_pack") or "mattpocock/skills"
-    skills = skills_for_pack(wires, pack)
+    jobs = pack_jobs(wires, extra_pack)
     if not npx:
+        preview = " && ".join(" ".join(install_cmd(p, s)) for p, s in jobs)
         notes.append(
             "npx not found; skip craft install. Binder skills are already copied. "
-            f"Run: {' '.join(install_cmd(pack, skills))}"
+            f"Run: {preview}"
         )
         return notes
-    cmd = install_cmd(pack, skills, npx)
-    proc = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
-    notes.append(f"$ {' '.join(cmd)} exit={proc.returncode}")
-    if proc.stdout:
-        notes.append(proc.stdout[-2000:])
-    if proc.returncode != 0 and proc.stderr:
-        notes.append(proc.stderr[-1000:])
+    for pack, skills in jobs:
+        cmd = install_cmd(pack, skills, npx)
+        proc = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
+        notes.append(f"$ {' '.join(cmd)} exit={proc.returncode}")
+        if proc.stdout:
+            notes.append(proc.stdout[-2000:])
+        if proc.returncode != 0 and proc.stderr:
+            notes.append(proc.stderr[-1000:])
     return notes
 
 

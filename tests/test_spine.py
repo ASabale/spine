@@ -234,4 +234,12 @@ def test_install_cmd_uses_wired_skills():
     assert "-s" in cmd
     assert "wayfinder" in cmd
     assert "code-review" in cmd
+    assert "grill-with-docs" in cmd
+    assert "handoff" in cmd
+    from spine.evolve import pack_jobs
+    jobs = pack_jobs(wires)
+    packs = [p for p, _ in jobs]
+    assert "vercel-labs/skills" in packs
+    assert "obra/superpowers" in packs
+    assert "anthropics/skills" in packs
 
