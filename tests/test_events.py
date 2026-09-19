@@ -74,3 +74,11 @@ def test_content_revision_changes_when_bytes_change(tmp_path: Path):
     first = content_revision(path)
     path.write_text("b\n", encoding="utf-8")
     assert content_revision(path) != first
+
+
+def test_content_revision_ignores_status_metadata(tmp_path: Path):
+    path = tmp_path / "item.md"
+    path.write_text("# Title\n\nType: work-item\nStatus: ready\n\nhello\n", encoding="utf-8")
+    first = content_revision(path)
+    path.write_text("# Title\n\nType: work-item\nStatus: doing\n\nhello\n", encoding="utf-8")
+    assert content_revision(path) == first

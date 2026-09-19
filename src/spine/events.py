@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from spine.model import EXEC_ROOT
+from spine.model import EXEC_ROOT, parse_front
 
 
 def append_event(
@@ -39,4 +39,5 @@ def append_event(
 
 
 def content_revision(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    _meta, body = parse_front(path.read_text(encoding="utf-8"))
+    return hashlib.sha256(body.encode("utf-8")).hexdigest()
