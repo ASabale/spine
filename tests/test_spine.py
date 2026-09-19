@@ -193,14 +193,6 @@ def test_doctor_reports_contract_version_skew(tmp_path: Path):
     assert any("contract version 99" in m for m in msgs)
 
 
-def test_new_ticket_and_work_item_flags(tmp_path: Path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    assert main(["init"]) == 0
-    assert main(["new", "--title", "Both", "--ticket", "--work-item"]) == 0
-    assert (tmp_path / "docs/spine/tickets/01-both.md").exists()
-    assert (tmp_path / "docs/spine/work-items/01-both.md").exists()
-
-
 def test_software_needs_eval_and_review_proof(tmp_path: Path):
     init_target(tmp_path)
     wi = new_work_item(tmp_path, "Ship CLI", "software")
@@ -245,7 +237,7 @@ def test_install_cmd_uses_wired_skills():
     assert "affaan-m/ecc" in packs
     ecc_skills = dict(jobs)["affaan-m/ecc"]
     assert "eval-harness" in ecc_skills
-    assert "verification-loop" in ecc_skills
+    assert "verification-loop" not in ecc_skills
     assert "e2e-testing" in ecc_skills
     assert "security-review" in ecc_skills
     assert "context-budget" in ecc_skills

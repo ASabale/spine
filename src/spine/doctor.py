@@ -13,8 +13,19 @@ def _blocker_number(value: str) -> int | None:
     return None
 
 
+def doctor_ok(msgs: list[str]) -> bool:
+    """True when doctor has nothing left for a human/agent to interpret as drift."""
+    return all(m == "ok" or m.startswith("FIX ") for m in msgs)
+
+
 def doctor(root: Path, *, apply: bool = True) -> list[str]:
     msgs: list[str] = []
+    if not (root / SPEC_ROOT / "contract.yaml").exists():
+        msgs.append("REPORT not a spine target; run: spine init")
+        out = root / EXEC_ROOT / "doctor" / "last.txt"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text("\n".join(msgs) + "\n", encoding="utf-8")
+        return msgs
     contract = load_contract(root)
     packaged = packaged_contract()
     if contract.version != packaged.version:

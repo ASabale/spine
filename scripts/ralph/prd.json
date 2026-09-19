@@ -1,0 +1,389 @@
+{
+  "project": "spine",
+  "branchName": "ralph/operator-loop",
+  "description": "Agent-first operator surface vs beads/GSD. One story per local-Qwen window. No contract migration, adapters, extra type profiles, CONTEXT/ADR scaffolding.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Drop duplicate new-ticket CLI tests",
+      "description": "Keep one CLI test for spine new --ticket --work-item.",
+      "acceptanceCriteria": [
+        "tests/test_spine.py keeps one of the two duplicate tests",
+        "uv run pytest -q passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "done this session"
+    },
+    {
+      "id": "US-002",
+      "title": "Add spine next verb",
+      "description": "beads bd ready / GSD /gsd next.",
+      "acceptanceCriteria": [
+        "spine next prints next_lines only",
+        "uv run pytest -q passes"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "done"
+    },
+    {
+      "id": "US-003",
+      "title": "JSON next and status for agents",
+      "description": "beads --json.",
+      "acceptanceCriteria": [
+        "--json exposes cwd next run",
+        "uv run pytest -q passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "done"
+    },
+    {
+      "id": "US-004",
+      "title": "Bare spine prints the board",
+      "description": "No argparse required-subcommand error.",
+      "acceptanceCriteria": [
+        "main([]) prints ## Next",
+        "uv run pytest -q passes"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "done"
+    },
+    {
+      "id": "US-005",
+      "title": "Doctor prints Next after report",
+      "description": "GSD routes status to next.",
+      "acceptanceCriteria": [
+        "spine doctor prints ## Next",
+        "uv run pytest -q passes"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "done"
+    },
+    {
+      "id": "US-006",
+      "title": "Claim with no target uses next",
+      "description": "beads bd update --claim.",
+      "acceptanceCriteria": [
+        "main(['claim']) claims the open ticket",
+        "errors when nothing to claim",
+        "uv run pytest -q passes"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "claimable_from_next; Qwen iter 1 produced no files"
+    },
+    {
+      "id": "US-007",
+      "title": "Show one artifact by id",
+      "description": "beads bd show.",
+      "acceptanceCriteria": [
+        "spine show 01-open-work prints the file",
+        "missing target exit 1",
+        "uv run pytest -q passes"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "done this session after Qwen noop"
+    },
+    {
+      "id": "US-009",
+      "title": "Prime verb and hitl JSON flag",
+      "description": "beads bd prime. hitl true when a next line is not a spine command.",
+      "acceptanceCriteria": [
+        "spine prime prints doctor+next JSON",
+        "hitl true on empty map",
+        "uv run pytest -q passes"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "done"
+    },
+    {
+      "id": "US-010",
+      "title": "Prime report-only skips claim fixes",
+      "description": "As an agent, I want spine prime --report-only to report a stale claim without releasing it.",
+      "acceptanceCriteria": [
+        "Seed a stale claim, run main(['prime','--report-only']), Owner still set",
+        "messages mention STALE",
+        "test in tests/test_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": "tests/test_prime.py; prime --report-only already wired to doctor(apply=False). Landed while Qwen sat on Working..."
+    },
+    {
+      "id": "US-011",
+      "title": "Binder next mentions spine prime",
+      "description": "Agents loading the next binder should see spine prime as the sit-down.",
+      "acceptanceCriteria": [
+        "src/spine/data/binder/next/SKILL.md body contains spine prime",
+        "description frontmatter still starts with a verb",
+        "uv run pytest -q passes"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "src/spine/data/binder/next/SKILL.md body is spine prime. Copied to harness skill dirs."
+    },
+    {
+      "id": "US-012",
+      "title": "AGENTS.md sit-down is spine prime",
+      "description": "This repo is the first target. Session start should match beads bd prime.",
+      "acceptanceCriteria": [
+        "AGENTS.md Every session mentions spine prime",
+        "uv run pytest -q still passes",
+        "do not rewrite the whole file"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": "AGENTS.md Every session step 2 is spine prime."
+    },
+    {
+      "id": "US-013",
+      "title": "Claim prints Next after success",
+      "description": "As an agent, after spine claim I want ## Next (or JSON next/run) so I do not call status again. Market: mutating verbs should return the new ready item.",
+      "acceptanceCriteria": [
+        "After main(['claim']) on an open ticket, stdout includes Answer or set-status resolved",
+        "test in tests/test_mutate_next.py (do not rewrite tests/test_next.py)",
+        "uv run pytest -q passes"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": "claim prints ## Next after success"
+    },
+    {
+      "id": "US-014",
+      "title": "set-status prints Next after success",
+      "description": "As an agent, after a legal set-status I want the next command printed. Same pattern as claim.",
+      "acceptanceCriteria": [
+        "After init, new work-item, set-status doing, stdout includes checking or ## Next",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": "set-status prints ## Next after success"
+    },
+    {
+      "id": "US-015",
+      "title": "Help lists prime show next",
+      "description": "spine --help must name the agent sit-down verbs so a stranger finds them.",
+      "acceptanceCriteria": [
+        "tests/test_help.py asserts prime, show, and next appear in --help",
+        "uv run pytest -q passes"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": "tests/test_help.py asserts prime/show/next"
+    },
+    {
+      "id": "US-016",
+      "title": "new prints Next after mint",
+      "description": "As an agent, after spine new ticket I want ## Next so the next verb is claim.",
+      "acceptanceCriteria": [
+        "After init and main(['new','ticket','--title','X']), stdout includes ## Next and claim",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": "new prints ## Next; tests/test_mutate_next.py"
+    },
+    {
+      "id": "US-017",
+      "title": "release prints Next after success",
+      "description": "Same mutating-verb pattern as claim/set-status.",
+      "acceptanceCriteria": [
+        "Claim a ticket then main(['release', path]) stdout includes ## Next",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": "release prints ## Next"
+    },
+    {
+      "id": "US-018",
+      "title": "JSON payload includes ok boolean",
+      "description": "As an agent, spine prime JSON should have ok true when doctor messages are all ok/empty so I do not regex messages.",
+      "acceptanceCriteria": [
+        "After init, prime JSON has ok true",
+        "After a BROKEN blocker with --report-only, ok is false",
+        "test in tests/test_prime.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": "prime JSON ok via doctor_ok(); version on payload"
+    },
+    {
+      "id": "US-019",
+      "title": "link prints Next after success",
+      "description": "Mutating-verb pattern. tests/test_mutate_next.py already has test_link_prints_next if this is done.",
+      "acceptanceCriteria": [
+        "If tests/test_mutate_next.py::test_link_prints_next exists and pytest is green, mark passes true with notes already landed",
+        "Otherwise implement: after spine link A B, stdout includes ## Next",
+        "uv run pytest -q passes"
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": "link already printed ## Next; test_link_prints_next green"
+    },
+    {
+      "id": "US-020",
+      "title": "status --json includes version",
+      "description": "Agents should know CLI version without a second command. Market: beads bd --version in JSON envelopes.",
+      "acceptanceCriteria": [
+        "If tests/test_next.py::test_status_json_includes_version exists and pytest is green, mark passes true",
+        "Otherwise add version from spine.__version__ to status_payload",
+        "uv run pytest -q passes"
+      ],
+      "priority": 20,
+      "passes": true,
+      "notes": "status_payload.version; test_status_json_includes_version green"
+    },
+    {
+      "id": "US-021",
+      "title": "show --json emits frontmatter object",
+      "description": "As an agent, I want spine show 01-open-work --json so I can read Status/Owner without parsing YAML. Market: beads bd show --json.",
+      "acceptanceCriteria": [
+        "spine show <stem> --json prints JSON with keys file, meta, body",
+        "meta.Status is a string",
+        "missing target still exit 1",
+        "test in tests/test_show.py (do not rewrite tests/test_next.py)",
+        "uv run pytest -q passes"
+      ],
+      "priority": 21,
+      "passes": true,
+      "notes": "show --json {file,meta,body}; tests/test_show.py"
+    },
+    {
+      "id": "US-022",
+      "title": "spine run prints first executable command",
+      "description": "As an agent, I want one line I can exec. spine run prints the first status_payload run entry. If run is empty, exit 2 and print the first next line to stderr. Market: beads bd ready then exec.",
+      "acceptanceCriteria": [
+        "After init plus an open ticket, main(['run']) prints a line starting with spine claim and exits 0",
+        "After init with empty map only, main(['run']) exits 2",
+        "test in tests/test_run.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 22,
+      "passes": true,
+      "notes": "spine run; placeholders with ... omitted from run; exit 2 when run empty"
+    },
+    {
+      "id": "US-023",
+      "title": "prime JSON includes inited boolean",
+      "description": "As an agent, I want prime.ok and prime.inited so a non-target is obvious without regex on messages. inited is true iff docs/spine/contract.yaml exists.",
+      "acceptanceCriteria": [
+        "After init, prime JSON inited is true",
+        "On an empty tmp dir, prime --report-only JSON inited is false",
+        "test in tests/test_prime.py only",
+        "uv run pytest -q passes"
+      ],
+      "priority": 23,
+      "passes": true,
+      "notes": "already landed: tests/test_prime.py inited true/false; cli prime JSON emits inited from contract.yaml exists"
+    },
+    {
+      "id": "US-024",
+      "title": "run after claim prints set-status",
+      "description": "After claiming the open ticket, spine run should print the resolve command, not claim again.",
+      "acceptanceCriteria": [
+        "init, new ticket, claim, then main(['run']) stdout contains set-status and resolved",
+        "test in tests/test_run.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 24,
+      "passes": true,
+      "notes": "already landed: claimed ticket yields Answer+set-status resolved in next_lines, so run[0] is the resolve command. Regression test tests/test_run.py::test_run_after_claim_prints_set_status (exact line + set-status/resolved). 71 passed."
+    },
+    {
+      "id": "US-025",
+      "title": "claim --json prints payload not board prose",
+      "description": "As an agent, spine claim --json should print status_payload (with run/hitl) instead of ## Next markdown. Market: beads --json on mutations.",
+      "acceptanceCriteria": [
+        "After init + ticket, main(['claim','--json']) stdout is JSON with keys run, next, user",
+        "stdout does not contain '## Next'",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 25,
+      "passes": true,
+      "notes": "claim --json flag + status_payload JSON (run/next/user); prose Next kept for non-json. Files: src/spine/cli.py, tests/test_mutate_next.py (test_claim_json_prints_payload). Commit skipped: unrelated dirty tree."
+    },
+    {
+      "id": "US-026",
+      "title": "set-status --json prints payload",
+      "description": "As an agent, after a legal set-status I want JSON with run/next/user, not ## Next markdown. Same --json dest as other verbs (_add_json_flag on the subparser).",
+      "acceptanceCriteria": [
+        "After init, new work-item, main(['set-status', path, 'doing', '--json']) stdout is JSON with keys run, next, user",
+        "stdout does not contain '## Next'",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 26,
+      "passes": true,
+      "notes": "set-status --json via _emit_payload_or_next; tests/test_mutate_next.py::test_set_status_json_prints_payload"
+    },
+    {
+      "id": "US-027",
+      "title": "release --json prints payload",
+      "description": "Mutating-verb --json pattern. spine release <target> --json prints status_payload keys, not ## Next.",
+      "acceptanceCriteria": [
+        "Claim a ticket then main(['release', path, '--json']) stdout is JSON with keys run, next",
+        "stdout does not contain '## Next'",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 27,
+      "passes": true,
+      "notes": "release --json; tests/test_mutate_next.py::test_release_json_prints_payload"
+    },
+    {
+      "id": "US-028",
+      "title": "new --json prints payload",
+      "description": "After minting a ticket, agents want JSON next/run (usually claim) instead of the board novel.",
+      "acceptanceCriteria": [
+        "After init, main(['new', 'ticket', '--title', 'X', '--json']) stdout is JSON with keys run, next",
+        "stdout does not contain '## Next'",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 28,
+      "passes": true,
+      "notes": "new --json (payload only, no minted path + ## Next); tests/test_mutate_next.py::test_new_json_prints_payload"
+    },
+    {
+      "id": "US-029",
+      "title": "prime JSON includes cwd",
+      "description": "spine prime JSON must include cwd (the process working directory) so agents do not guess. Copy cwd from status_payload; do not drop it when adding ok/inited.",
+      "acceptanceCriteria": [
+        "After init, prime JSON cwd equals str(tmp_path)",
+        "test in tests/test_prime.py only",
+        "uv run pytest -q passes"
+      ],
+      "priority": 29,
+      "passes": true,
+      "notes": "prime JSON already had cwd; tests/test_prime.py::test_prime_json_includes_cwd"
+    },
+    {
+      "id": "US-030",
+      "title": "link --json prints payload",
+      "description": "Last mutating verb. spine link A B --json prints status_payload keys, not ## Next.",
+      "acceptanceCriteria": [
+        "After init and two tickets, main(['link', a, b, '--json']) stdout is JSON with keys run, next",
+        "stdout does not contain '## Next'",
+        "test in tests/test_mutate_next.py",
+        "uv run pytest -q passes"
+      ],
+      "priority": 30,
+      "passes": true,
+      "notes": "link --json; tests/test_mutate_next.py::test_link_json_prints_payload"
+    }
+  ]
+}

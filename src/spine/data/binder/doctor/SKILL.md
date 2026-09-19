@@ -5,11 +5,8 @@ description: Recover spine drift. Use at session start and when artifacts look w
 
 # doctor
 
-Run the CLI. Done when `spine doctor` prints `ok` or every reported line is understood.
+Run `spine prime` (applies doctor, then prints next as JSON). If it says this is not a target, run `spine init`. Done when messages are understood and the first `run` command has been executed.
 
 ```
-spine doctor
-spine evolve
+spine prime
 ```
-
-Doctor applies stale claims, dangling links, and missing `Blocked by` rollups. It reports unknown statuses, missing spec files, and gitignore drift. Craft refresh: `spine evolve`.

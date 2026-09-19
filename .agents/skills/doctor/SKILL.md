@@ -1,16 +1,12 @@
 ---
 name: doctor
-description: Recover mechanical drift in a spine target. Use at session start and when files look wrong.
+description: Recover spine drift. Use at session start and when artifacts look wrong.
 ---
 
 # doctor
 
-```
-spine doctor
-spine evolve
-```
+Run `spine prime` (applies doctor, then prints next as JSON). If it says this is not a target, run `spine init`. Done when messages are understood and the first `run` command has been executed.
 
-Doctor auto-fixes stale claims, CLI-owned links, and rollups. It reports unknown statuses, missing spec files, gitignore drift. Never rewrite content sections by hand to fake a fix.
-
-## Gate
-Recovery loop. Not a harness hook.
+```
+spine prime
+```

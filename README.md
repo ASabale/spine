@@ -23,11 +23,11 @@ uv run pytest
 2. `spine wire --install` — `npx skills add mattpocock/skills` (skills.sh). Needs `npx`.
 3. `spine doctor` — recover drift (stale claims and broken links auto-fix; gitignore, unknown statuses, missing spec files report-only)
 4. `spine evolve` — refresh binder from the wheel; `npx skills update` if present
-5. `spine status` — work items with next gate, tickets, frontier
+5. `spine next` — the next command (`spine status` is the full board; both accept `--json`)
 
 ## Verbs
 
-`init` `status` `new` `claim` `release` `set-status` `link` `doctor` `wire` `evolve`
+`init` `status` `next` `run` `prime` `new` `claim` `show` `release` `set-status` `link` `doctor` `wire` `evolve`
 
 `spine new --title "…" --ticket --work-item` mints both. Same command with a kind: `spine new ticket --title "…"`.
 

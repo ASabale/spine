@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from spine.evolve import evolve, set_pack
-from spine.initcmd import init_target
+from spine.initcmd import README, init_target
 
 
 def test_set_pack_rewrites_default_pack(tmp_path: Path):
@@ -23,3 +23,17 @@ def test_evolve_refresh_without_npx(tmp_path: Path):
     text = binder.read_text(encoding="utf-8")
     assert "stale" not in text
     assert "spine new" in text
+
+
+def test_evolve_refresh_restores_repo_readme(tmp_path: Path):
+    init_target(tmp_path)
+    readme = tmp_path / "docs/spine/README.md"
+    readme.write_text("operator edits drifted\n", encoding="utf-8")
+    with patch("spine.evolve.shutil.which", return_value=None):
+        evolve(tmp_path)
+    assert readme.read_text(encoding="utf-8") == README
+
+
+def test_repo_readme_matches_packaged():
+    repo = Path(__file__).resolve().parent.parent / "docs/spine/README.md"
+    assert repo.read_text(encoding="utf-8") == README

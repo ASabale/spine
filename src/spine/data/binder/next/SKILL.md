@@ -5,11 +5,10 @@ description: Pick the next spine action. Use when choosing between the frontier 
 
 # next
 
-Run `spine doctor` then `spine status`. Take the first frontier ticket, or the work item whose status is the next gate. Done when the chosen path is claimed or already owned.
+Run `spine prime` (doctor then next as JSON). Run the first command in `run`. Done when that command has been run (or `hitl` is true and a human must act).
 
 ```
-spine doctor
-spine status
+spine prime
 ```
 
-HITL gates live in `docs/spine/contract.yaml`. Craft: `docs/spine/wires.yaml` concern `next`.
+Craft: `docs/spine/wires.yaml` concern `next`.

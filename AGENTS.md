@@ -5,9 +5,10 @@ Implement spine from [spec.md](spec.md) plus this file. Product code lives here 
 ## Every session
 
 1. Read [spec.md](spec.md), [CONTEXT.md](CONTEXT.md).
-2. Verify: `uv run pytest`.
-3. CLI owns metadata; agents own content. Binder skills never restate the contract.
-4. Craft skills come from skills.sh (`npx skills add mattpocock/skills`), not vendored.
+2. `spine prime`. Run the first command in `run`. `spine status` is the human board.
+3. Verify: `uv run pytest`.
+4. CLI owns metadata; agents own content. Binder skills never restate the contract.
+5. Craft skills come from skills.sh (`npx skills add mattpocock/skills`), not vendored.
 
 ## Standing constraints
 

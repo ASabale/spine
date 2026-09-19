@@ -8,6 +8,15 @@ from spine.resources import data_root, read_data
 
 README = """# spine artifacts
 
+Sit-down in this directory:
+
+```
+spine doctor
+spine next
+```
+
+The `## Next` block is the next command. CLI owns status, owner, claim, links, numbers. Agents own content.
+
 Checked-in **spec tier** (this tree):
 
 - `maps/` — planning maps (index only)
@@ -15,16 +24,11 @@ Checked-in **spec tier** (this tree):
 - `work-items/` — execution work items
 - `decisions/` — durable decisions
 - `wires.yaml` — binder concern → skills.sh craft skills
+- `contract.yaml` — statuses and transitions (do not restate in skills)
 
 Gitignored **execution tier** lives in `.spine/` (`evals`, `reviews`, `handoffs`, `doctor`, `claims`).
 
-Install craft skills with the open skills CLI (skills.sh), not by copying bodies into this repo:
-
-```
-npx skills add mattpocock/skills -y
-```
-
-Or `spine wire --install` to install the default wires.
+Craft: `spine wire --install` (skills.sh). Bodies are not vendored here.
 """
 
 GITIGNORE_BLOCK = """

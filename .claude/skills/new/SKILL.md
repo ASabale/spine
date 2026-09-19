@@ -1,18 +1,17 @@
 ---
 name: new
-description: Capture a map ticket or work item via the spine CLI. Use when something new must be recorded in the target.
+description: Mint a spine ticket or work item. Use when capturing a new ticket or work item.
 ---
 
 # new
 
-Mint artifacts with the CLI. Do not hand-edit status, owner, claim, links, or numbers.
+Run `spine new`. Done when the file exists under `docs/spine/tickets/` or `docs/spine/work-items/`.
 
 ```
 spine new ticket --title "..." --type grilling
 spine new work-item --title "..." --profile software
+spine new --title "..." --ticket
+spine new --title "..." --work-item
 ```
 
-Craft skills for interviewing live on skills.sh. Default wire: `mattpocock/skills` `grill-me` / `wayfinder` (`npx skills add mattpocock/skills -s grill-me -s wayfinder -y`). See `docs/spine/wires.yaml`.
-
-## Gate
-creating-work-item is HITL. Tickets start `open`. Work items start `ready`.
+CLI owns metadata. Craft for interviewing: `docs/spine/wires.yaml` concern `wayfind`.

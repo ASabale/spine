@@ -14,7 +14,7 @@ extra_packs:
     skills: [verification-before-completion, requesting-code-review]
     why: eval/review discipline that complements Matt's code-review
   affaan-m/ecc:
-    skills: [eval-harness, verification-loop, e2e-testing, security-review, context-budget]
+    skills: [eval-harness, e2e-testing, security-review, context-budget]
     why: eval/review/session craft that Matt/Superpowers do not cover
 concerns:
   wayfind:

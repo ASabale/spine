@@ -5,13 +5,10 @@ description: Check a software work item against acceptance. Use when status is c
 
 # eval
 
-Write proof under `.spine/evals/`. Then:
+Write proof at `.spine/evals/<work-item-stem>.md`. Done when every acceptance line has a pass/fail and the file exists.
 
 ```
 spine set-status docs/spine/work-items/NN-slug.md reviewing
 ```
 
-Craft: `npx skills add mattpocock/skills -s qa -y`.
-
-## Gate
-checking (agent-drivable). Software profile requires this before done.
+Craft: `docs/spine/wires.yaml` concern `eval`.

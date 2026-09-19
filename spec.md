@@ -77,15 +77,18 @@ Same contract. Software work items must pass `checking` (eval against acceptance
 
 Humans and agents use the same CLI. It is the only writer of machine-driving metadata (status, owner, claim, links, numbers).
 
-Verbs: `init`, `status`, `new`, `claim`, `release`, `set-status`, `link`, `doctor`.
+Verbs: `init`, `status`, `next`, `run`, `prime`, `new`, `claim`, `show`, `release`, `set-status`, `link`, `doctor`.
 
-- `init` — scaffold a target.
-- `status` — board (work items + next gate).
-- `new` — mint a work item and/or a map ticket (flags, not a second verb).
-- `claim` / `release` — solo-first lock.
-- `set-status` — only legal transitions.
-- `link` — CLI-owned bidirectional links.
-- `doctor` — mechanical drift.
+- `init` — scaffold a target, then print the board.
+- `status` — board plus `## Next` (the next command). `--json` for agents (`next`, `run`, tickets, frontier).
+- `next` — print only the next command lines. `--json` exposes `run`, `hitl`, `user`, `version`. Sit-down: `spine prime`. Bare `spine` prints the board.
+- `new` — mint a work item and/or a map ticket (flags, not a second verb). Prints `## Next` after mint. `--json` prints the payload instead.
+- `claim` / `release` — solo-first lock. `spine claim` with no target claims the artifact named by `spine next`. Both print `## Next` after success. `--json` prints the payload instead of `## Next`.
+- `show` — print one ticket or work item by stem or path. `--json` emits `{file, meta, body}`.
+- `run` — print the first executable `spine …` command from next (`run[0]`). `run` omits placeholder lines that contain `...`. Exit 2 when `run` is empty (HITL).
+- `set-status` — legal work-item transitions; tickets: `open|claimed|resolved`. Prints `## Next`; `--json` prints the payload.
+- `link` — CLI-owned bidirectional links. Prints `## Next` after success. `--json` prints the payload.
+- `doctor` — mechanical drift, then `## Next`. Non-target: report `spine init`. `--json` / `prime` include `messages`, `ok` (true when only `ok`/`FIX` lines remain), `cwd`, `next`, `run`, `hitl`, `version`.
 
 No harness-specific subcommands. No plugin install.
 

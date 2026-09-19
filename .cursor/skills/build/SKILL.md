@@ -1,16 +1,15 @@
 ---
 name: build
-description: Implement a software work item in doing. Use when the item is claimed and status is doing.
+description: Implement a claimed spine work item. Use when status is doing.
 ---
 
 # build
+
+Claim, then implement the deliverable. Done when the deliverable exists and the next gate is `checking`.
 
 ```
 spine claim docs/spine/work-items/NN-slug.md
 spine set-status docs/spine/work-items/NN-slug.md doing
 ```
 
-Agents own content. CLI owns metadata. Install craft: `npx skills add mattpocock/skills -s implement -s tdd -s codebase-design -y`.
-
-## Gate
-doing (agent-drivable). Next: checking.
+CLI owns metadata. Craft: `docs/spine/wires.yaml` concern `build`.

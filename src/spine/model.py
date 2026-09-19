@@ -17,6 +17,11 @@ HARNESS_SKILL_ROOTS = (
     Path(".cursor/skills"),
 )
 TICKET_STATUSES = {"open", "claimed", "resolved"}
+TICKET_TRANSITIONS = {
+    "open": ["claimed", "resolved"],
+    "claimed": ["resolved", "open"],
+    "resolved": [],
+}
 
 
 @dataclass(frozen=True)

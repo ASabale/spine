@@ -5,3 +5,21 @@ __pycache__/
 .spine/
 dist/
 *.egg-info/
+
+# Ralph local memory
+scripts/ralph/progress.txt
+scripts/ralph/.last-branch
+scripts/ralph/archive/
+scripts/ralph-prompt.md
+
+# Craft extras (skills.sh); not vendored. Includes Snyk High Risk verification-loop.
+.agents/skills/context-budget/
+.agents/skills/e2e-testing/
+.agents/skills/eval-harness/
+.agents/skills/security-review/
+.agents/skills/verification-loop/
+.claude/skills/context-budget
+.claude/skills/e2e-testing
+.claude/skills/eval-harness
+.claude/skills/security-review
+.claude/skills/verification-loop
