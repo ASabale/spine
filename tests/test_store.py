@@ -1,7 +1,11 @@
 from pathlib import Path
 
+import pytest
+
+from spine.errors import ClaimConflict
 from spine.initcmd import init_target
 from spine.store import CoordStore, FileStore
+
 
 
 def test_filestore_roundtrip(tmp_path: Path):
@@ -67,3 +71,69 @@ def test_query_owns_next_and_board():
     assert "def next_lines" not in src
     assert "def board" not in src
     assert "def status_payload" not in src
+
+
+def test_coordstore_claims_one_winner(tmp_path: Path):
+    init_target(tmp_path)
+    a = CoordStore(tmp_path)
+    a.take_claim("docs/spine/tickets/01.md", "ada", "2026-09-19T00:00:00+00:00")
+    assert a.get_claim("docs/spine/tickets/01.md") == (
+        "ada",
+        "2026-09-19T00:00:00+00:00",
+    )
+    b = CoordStore(tmp_path)
+    with pytest.raises(ClaimConflict, match="already claimed"):
+        b.take_claim("docs/spine/tickets/01.md", "bob", "2026-09-19T00:00:01+00:00")
+    assert b.get_claim("docs/spine/tickets/01.md")[0] == "ada"
+
+
+def test_coordstore_drop_claim_owner_only(tmp_path: Path):
+    init_target(tmp_path)
+    store = CoordStore(tmp_path)
+    store.take_claim("wi", "ada", "t")
+    with pytest.raises(ClaimConflict, match="held by"):
+        store.drop_claim("wi", owner="bob")
+    assert store.get_claim("wi") == ("ada", "t")
+    store.drop_claim("wi", owner="ada")
+    assert store.get_claim("wi") is None
+
+
+def test_coordstore_concurrent_one_winner(tmp_path: Path):
+    import threading
+
+    init_target(tmp_path)
+    CoordStore(tmp_path)
+    winners: list[str] = []
+    losers: list[str] = []
+    n = 8
+    barrier = threading.Barrier(n)
+    lock = threading.Lock()
+
+    def worker(name: str) -> None:
+        barrier.wait()
+        store = CoordStore(tmp_path)
+        try:
+            store.take_claim("spec", name, "t")
+            with lock:
+                winners.append(name)
+        except ClaimConflict:
+            with lock:
+                losers.append(name)
+
+    threads = [threading.Thread(target=worker, args=(f"w{i}",)) for i in range(n)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert len(winners) == 1
+    assert len(losers) == n - 1
+    assert CoordStore(tmp_path).get_claim("spec")[0] == winners[0]
+
+
+def test_coordstore_claims_use_immediate_lock():
+    import inspect
+
+    src = inspect.getsource(CoordStore)
+    assert "CREATE TABLE IF NOT EXISTS claims" in src
+    assert "BEGIN IMMEDIATE" in src
+

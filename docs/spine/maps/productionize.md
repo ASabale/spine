@@ -60,6 +60,9 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
 - P3 next + run (2026-09-19): inflight order is `contract.next.inflight`.
   `run` is a list of `{cmd, hitl}` mappings; HITL-only states have `run=[]`.
   `spine run` prints the first command. Same state → same next.
+- P4 claims (2026-09-19): SQLite `claims` table, `BEGIN IMMEDIATE` one-winner,
+  owner-or-stale release. Frontmatter remains the Git copy. `engine.py` has no
+  sqlite. 50-worker harness is ticket 11.
 
 
 ## Not yet specified

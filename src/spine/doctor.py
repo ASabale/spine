@@ -133,7 +133,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
             if is_stale(meta, root=root):
                 msgs.append(f"STALE claim on {path.name}")
                 if apply:
-                    release(root, str(path.relative_to(root)))
+                    release(root, str(path.relative_to(root)), force=True)
                     msgs.append(f"FIX released stale claim {path.name} (lease expired)")
             links = [x.strip() for x in (meta.get("Links") or "").split(",") if x.strip()]
             kept = []

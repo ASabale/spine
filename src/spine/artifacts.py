@@ -14,7 +14,7 @@ from spine.model import (
     load_contract,
 )
 
-from spine.store import FileStore
+from spine.store import CoordStore, FileStore
 
 
 def _now() -> datetime:
@@ -150,12 +150,20 @@ def set_status(root: Path, spec: str, nxt: str) -> Path:
 def claim(root: Path, spec: str) -> Path:
     path = resolve_artifact(root, spec)
     meta, body = read_meta(path)
-    owner = meta.get("Owner") or ""
-    claimed_at = meta.get("Claimed-at") or ""
+    key = str(path.relative_to(root))
+    store = CoordStore(root)
+    row = store.get_claim(key)
+    owner = (row[0] if row else meta.get("Owner") or "")
+    claimed_at = (row[1] if row else meta.get("Claimed-at") or "")
     if owner and claimed_at and not _stale(claimed_at, root=root):
         raise ClaimConflict(f"already claimed by {owner} at {claimed_at}")
-    meta["Owner"] = identity()
-    meta["Claimed-at"] = _now().isoformat()
+    if row:
+        store.drop_claim(key, force=True)
+    me = identity()
+    now = _now().isoformat()
+    store.take_claim(key, me, now)
+    meta["Owner"] = me
+    meta["Claimed-at"] = now
     if meta.get("Status") == "open":
         meta["Status"] = "claimed"
     write_meta(path, meta, body)
@@ -165,9 +173,19 @@ def claim(root: Path, spec: str) -> Path:
     return path
 
 
-def release(root: Path, spec: str) -> Path:
+def release(root: Path, spec: str, *, force: bool = False) -> Path:
     path = resolve_artifact(root, spec)
     meta, body = read_meta(path)
+    key = str(path.relative_to(root))
+    store = CoordStore(root)
+    row = store.get_claim(key)
+    me = identity()
+    held_by = (row[0] if row else meta.get("Owner") or "")
+    claimed_at = (row[1] if row else meta.get("Claimed-at") or "")
+    stale = bool(claimed_at) and _stale(claimed_at, root=root)
+    if held_by and held_by != me and not stale and not force:
+        raise ClaimConflict(f"held by {held_by}, not {me}")
+    store.drop_claim(key, owner=me, force=force or stale or not held_by)
     meta["Owner"] = ""
     meta["Claimed-at"] = ""
     if meta.get("Status") == "claimed":

@@ -88,7 +88,11 @@ def test_claim_conflict_and_release(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("SPINE_USER", "bob")
     with pytest.raises(ClaimConflict, match="already claimed"):
         claim(tmp_path, str(wi))
+    with pytest.raises(ClaimConflict, match="held by"):
+        release(tmp_path, str(wi))
+    monkeypatch.setenv("SPINE_USER", "ada")
     release(tmp_path, str(wi))
+    monkeypatch.setenv("SPINE_USER", "bob")
     claim(tmp_path, str(wi))
     meta, _ = read_meta(wi)
     assert meta["Owner"] == "bob"
