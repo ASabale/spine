@@ -2,6 +2,7 @@ from pathlib import Path
 
 from spine.artifacts import new_ticket, new_work_item, read_meta, write_meta
 from spine.doctor import doctor
+from spine.events import append_event
 from spine.initcmd import init_target
 
 
@@ -106,3 +107,27 @@ def test_doctor_resets_illegal_ticket_status(tmp_path: Path):
     assert any("FIX" in m and "status" in m.lower() and tk.name in m for m in msgs)
     meta, _ = read_meta(tk)
     assert meta["Status"] == "open"
+
+
+def test_doctor_restores_status_from_event_log(tmp_path: Path):
+    init_target(tmp_path)
+    wi = new_work_item(tmp_path, "Ship CLI")
+    append_event(
+        tmp_path,
+        from_status="ready",
+        to_status="doing",
+        spec=wi.name,
+    )
+    meta, body = read_meta(wi)
+    meta["Status"] = "checking"
+    write_meta(wi, meta, body)
+    msgs = doctor(tmp_path, apply=False)
+    assert any("event" in m.lower() and wi.name in m for m in msgs)
+    meta, _ = read_meta(wi)
+    assert meta["Status"] == "checking"
+    msgs = doctor(tmp_path, apply=True)
+    assert any("FIX" in m and "event" in m.lower() and wi.name in m for m in msgs)
+    meta, _ = read_meta(wi)
+    assert meta["Status"] == "doing"
+    msgs = doctor(tmp_path, apply=True)
+    assert not any("FIX" in m and "event" in m.lower() and wi.name in m for m in msgs)

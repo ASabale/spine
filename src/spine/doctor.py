@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from spine.artifacts import _is_ticket, is_stale, read_meta, release, write_meta
@@ -33,6 +34,22 @@ def _find_blocker(root: Path, value: str) -> Path | None:
         if p.name.split("-", 1)[0] == f"{num:02d}":
             return p
     return None
+
+
+def _logged_status(root: Path, path: Path) -> str | None:
+    log = root / EXEC_ROOT / "events.jsonl"
+    if not log.exists():
+        return None
+    last = None
+    name, stem = path.name, path.stem
+    for line in log.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        ev = json.loads(line)
+        spec = str(ev.get("spec") or "")
+        if name in spec or stem in spec:
+            last = ev.get("to") or None
+    return last
 
 
 def doctor_ok(msgs: list[str]) -> bool:
@@ -92,6 +109,15 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
                     meta["Status"] = nxt
                     write_meta(path, meta, body)
                     msgs.append(f"FIX status {path.name} {status} → {nxt}")
+                    meta, body = read_meta(path)
+            logged = _logged_status(root, path)
+            cur = meta.get("Status", "")
+            if logged and logged in allowed and logged != cur:
+                msgs.append(f"DRIFT {path.name} {cur} vs event {logged}")
+                if apply:
+                    meta["Status"] = logged
+                    write_meta(path, meta, body)
+                    msgs.append(f"FIX status {path.name} {cur} → {logged} from event log")
                     meta, body = read_meta(path)
             if is_stale(meta, root=root):
                 msgs.append(f"STALE claim on {path.name}")
