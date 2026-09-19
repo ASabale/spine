@@ -29,3 +29,12 @@ profiles:
 claim:
   stale_hours: 4
   owner_env: SPINE_USER
+tickets:
+  statuses:
+    - open
+    - claimed
+    - resolved
+  transitions:
+    open: [claimed, resolved]
+    claimed: [resolved, open]
+    resolved: []

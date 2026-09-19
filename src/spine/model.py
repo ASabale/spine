@@ -55,6 +55,17 @@ class Contract:
     def allowed(self, current: str, nxt: str) -> bool:
         return nxt in self.transitions.get(current, [])
 
+    @property
+    def ticket_statuses(self) -> list[str]:
+        return list(self.raw["tickets"]["statuses"])
+
+    @property
+    def ticket_transitions(self) -> dict[str, list[str]]:
+        return {k: list(v) for k, v in self.raw["tickets"]["transitions"].items()}
+
+    def ticket_allowed(self, current: str, nxt: str) -> bool:
+        return nxt in self.ticket_transitions.get(current, [])
+
     def validate(self) -> None:
         raw = self.raw
         if not isinstance(raw, dict):
@@ -90,6 +101,27 @@ class Contract:
             int(raw.get("version"))
         except (TypeError, ValueError):
             raise ContractError("version must be an int") from None
+        tickets = raw.get("tickets")
+        if not isinstance(tickets, dict):
+            raise ContractError("tickets must be a mapping")
+        t_statuses = tickets.get("statuses")
+        if not isinstance(t_statuses, list) or not t_statuses or not all(isinstance(s, str) and s for s in t_statuses):
+            raise ContractError("tickets.statuses must be a non-empty list of strings")
+        t_status_set = set(t_statuses)
+        t_transitions = tickets.get("transitions")
+        if not isinstance(t_transitions, dict):
+            raise ContractError("tickets.transitions must be a mapping")
+        for src, dests in t_transitions.items():
+            if src not in t_status_set:
+                raise ContractError(f"unknown ticket transition source {src}")
+            if not isinstance(dests, list) or not all(isinstance(d, str) for d in dests):
+                raise ContractError(f"tickets.transitions[{src}] must be a list of strings")
+            for dest in dests:
+                if dest not in t_status_set:
+                    raise ContractError(f"unknown ticket transition target {dest}")
+        t_missing = [s for s in t_statuses if s not in t_transitions]
+        if t_missing:
+            raise ContractError(f"ticket status missing from transitions: {t_missing}")
 
     def software_required(self) -> list[str]:
         return list(self.raw["profiles"]["software"]["required_before_done"])
