@@ -3,8 +3,8 @@
 Type: work-item
 Profile: software
 Status: done
-Owner: ASabale
-Claimed-at: 2026-09-19T06:47:22.842542+00:00
+Owner: 
+Claimed-at: 
 Links: 
 Deliverable: src/spine/evolve.py
 

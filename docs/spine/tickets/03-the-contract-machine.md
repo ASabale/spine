@@ -2,7 +2,7 @@
 
 Type: task
 Status: resolved
-Blocked by: 02-reconcile-the-contract.md
+Blocked by: 
 Owner: 
 Claimed-at: 
 

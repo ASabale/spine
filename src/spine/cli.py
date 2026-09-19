@@ -247,6 +247,7 @@ def main(argv: list[str] | None = None) -> int:
                     print(line)
                 print()
                 _print_next(root)
+            return 0 if doctor_ok(msgs) else 8
         elif args.cmd == "wire":
             set_pack(root, args.pack)
             if args.install:

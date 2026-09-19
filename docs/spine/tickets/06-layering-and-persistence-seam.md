@@ -2,7 +2,7 @@
 
 Type: task
 Status: resolved
-Blocked by: 03-the-contract-machine.md
+Blocked by: 
 Owner: 
 Claimed-at: 
 

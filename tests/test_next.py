@@ -279,7 +279,7 @@ def test_cli_prime_report_only_keeps_stale_claim(tmp_path: Path, monkeypatch, ca
     meta["Claimed-at"] = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
     write_meta(tk, meta, body)
     capsys.readouterr()
-    assert main(["prime", "--report-only"]) == 0
+    assert main(["prime", "--report-only"]) == 8
     data = json.loads(capsys.readouterr().out)
     assert any("STALE" in m for m in data["messages"])
     meta2, _ = read_meta(tk)

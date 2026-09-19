@@ -2,7 +2,7 @@
 
 Type: task
 Status: open
-Blocked by: 06-layering-and-persistence-seam.md
+Blocked by: 
 Owner: 
 Claimed-at: 
 

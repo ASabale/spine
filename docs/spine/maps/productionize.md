@@ -53,6 +53,10 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
 - P3 event log + revision binding (2026-09-19): `.spine/events.jsonl` is
   append-only JSONL from `advance`; `content_revision` hashes the work-item
   body; eval/review must match each other and that digest.
+- P3 doctor recovery (2026-09-19): `doctor` repairs unknown/illegal status,
+  event-log drift, stale claims, dangling links, and resolved/missing
+  `Blocked by` (path or filename). FIX lines include why. CLI exit 8 when
+  unrepaired.
 
 ## Not yet specified
 

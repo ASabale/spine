@@ -17,7 +17,7 @@ def test_prime_report_only_keeps_stale_owner(tmp_path: Path, monkeypatch, capsys
     meta["Claimed-at"] = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
     write_meta(wi, meta, body)
     capsys.readouterr()
-    assert main(["prime", "--report-only"]) == 0
+    assert main(["prime", "--report-only"]) == 8
     data = json.loads(capsys.readouterr().out)
     assert any("STALE" in m for m in data["messages"])
     meta, _ = read_meta(wi)
@@ -45,7 +45,7 @@ def test_prime_ok_false_on_broken_blocker(tmp_path: Path, monkeypatch, capsys):
     meta["Blocked by"] = "99"
     write_meta(later, meta, body)
     capsys.readouterr()
-    assert main(["prime", "--report-only"]) == 0
+    assert main(["prime", "--report-only"]) == 8
     data = json.loads(capsys.readouterr().out)
     assert data["ok"] is False
     assert any("BROKEN" in m for m in data["messages"])
@@ -72,7 +72,7 @@ def test_prime_json_includes_cwd(tmp_path: Path, monkeypatch, capsys):
 def test_prime_report_only_inited_false_on_empty_dir(tmp_path: Path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     capsys.readouterr()
-    assert main(["prime", "--report-only"]) == 0
+    assert main(["prime", "--report-only"]) == 8
     data = json.loads(capsys.readouterr().out)
     assert data["inited"] is False
     assert data["ok"] is False

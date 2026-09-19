@@ -53,8 +53,19 @@ def _logged_status(root: Path, path: Path) -> str | None:
 
 
 def doctor_ok(msgs: list[str]) -> bool:
-    """True when doctor has nothing left for a human/agent to interpret as drift."""
-    return all(m == "ok" or m.startswith("FIX ") for m in msgs)
+    """True when nothing unrepaired remains (FIX lines count as repaired)."""
+    if not msgs:
+        return True
+    if all(m == "ok" or m.startswith("FIX ") for m in msgs):
+        return True
+    reports = [m for m in msgs if m.startswith("REPORT ")]
+    unrepairable = [m for m in reports if "unknown status" not in m]
+    if unrepairable:
+        return False
+    detect = [m for m in msgs if m != "ok" and not m.startswith("FIX ")]
+    if not detect:
+        return True
+    return any(m.startswith("FIX ") for m in msgs)
 
 
 def doctor(root: Path, *, apply: bool = True) -> list[str]:
@@ -108,7 +119,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
                     nxt = "open" if ticket else "ready"
                     meta["Status"] = nxt
                     write_meta(path, meta, body)
-                    msgs.append(f"FIX status {path.name} {status} → {nxt}")
+                    msgs.append(f"FIX status {path.name} {status} → {nxt} (not in contract)")
                     meta, body = read_meta(path)
             logged = _logged_status(root, path)
             cur = meta.get("Status", "")
@@ -117,13 +128,13 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
                 if apply:
                     meta["Status"] = logged
                     write_meta(path, meta, body)
-                    msgs.append(f"FIX status {path.name} {cur} → {logged} from event log")
+                    msgs.append(f"FIX status {path.name} {cur} → {logged} from event log (frontmatter drifted)")
                     meta, body = read_meta(path)
             if is_stale(meta, root=root):
                 msgs.append(f"STALE claim on {path.name}")
                 if apply:
                     release(root, str(path.relative_to(root)))
-                    msgs.append(f"FIX released stale claim {path.name}")
+                    msgs.append(f"FIX released stale claim {path.name} (lease expired)")
             links = [x.strip() for x in (meta.get("Links") or "").split(",") if x.strip()]
             kept = []
             changed = False
@@ -136,7 +147,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
             if changed and apply:
                 meta["Links"] = ", ".join(kept)
                 write_meta(path, meta, body)
-                msgs.append(f"FIX links on {path.name}")
+                msgs.append(f"FIX links on {path.name} (dropped missing paths)")
                 meta, body = read_meta(path)
 
             blocked = (meta.get("Blocked by") or "").strip()
@@ -147,7 +158,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
                     if apply:
                         meta["Blocked by"] = ""
                         write_meta(path, meta, body)
-                        msgs.append(f"FIX cleared Blocked by on {path.name}")
+                        msgs.append(f"FIX cleared Blocked by on {path.name} ({blocked} missing)")
                 else:
                     bmeta, _ = read_meta(blocker)
                     if (bmeta.get("Status") or "") == "resolved":
@@ -155,7 +166,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
                         if apply:
                             meta["Blocked by"] = ""
                             write_meta(path, meta, body)
-                            msgs.append(f"FIX cleared Blocked by on {path.name}")
+                            msgs.append(f"FIX cleared Blocked by on {path.name} ({blocked} resolved)")
 
     out = root / EXEC_ROOT / "doctor" / "last.txt"
     out.parent.mkdir(parents=True, exist_ok=True)
