@@ -65,6 +65,8 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   sqlite. 50-worker harness is ticket 11.
 - P4 scale (2026-09-19): atomic IDs, spec-root path boundary, 50-worker
   harness, 100k next < 500ms and claim < 100ms.
+- P5 release (2026-09-19): `make release` is the gated path. `spine migrate`
+  dry-run/apply/rollback. CI runs the gate. Path/symlink boundary + no shell=True.
 
 
 ## Not yet specified

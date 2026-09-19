@@ -4,6 +4,8 @@ __pycache__/
 .pytest_cache/
 .spine/
 dist/
+.coverage
+htmlcov/
 *.egg-info/
 
 # Ralph local memory

@@ -15,6 +15,7 @@ From this source tree:
 ```
 uv run spine init
 uv run pytest
+make test
 ```
 
 ## Stranger loop
@@ -27,10 +28,12 @@ uv run pytest
 
 ## Verbs
 
-`init` `status` `next` `run` `prime` `new` `claim` `show` `release` `set-status` `link` `doctor` `wire` `evolve`
+`init` `status` `next` `run` `prime` `new` `claim` `show` `release` `set-status` `link` `doctor` `wire` `evolve` `migrate`
 
 `spine new --title "…" --ticket --work-item` mints both. Same command with a kind: `spine new ticket --title "…"`.
 
 Craft skills are **not** vendored. Discover them on [skills.sh](https://www.skills.sh/). Default pack: [mattpocock/skills](https://www.skills.sh/mattpocock/skills).
+
+Dev gate: `make test`. Ship gate: `make release`.
 
 See [spec.md](spec.md).

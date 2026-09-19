@@ -119,7 +119,8 @@ def resolve_artifact(root: Path, spec: str) -> Path:
         if d.exists():
             for f in d.glob("*.md"):
                 if spec in f.name or spec in f.stem:
-                    return f
+                    if _under_spec(root, f):
+                        return f.resolve()
     raise FileNotFoundError(spec)
 
 

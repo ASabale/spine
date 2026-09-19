@@ -23,6 +23,7 @@ from spine.artifacts import (
 from spine.doctor import doctor, doctor_ok
 from spine.errors import SpineError, exit_code_for
 from spine.evolve import evolve, install_wires, set_pack
+from spine.migrate import migrate
 from spine.initcmd import init_target
 from spine.model import SPEC_ROOT
 
@@ -125,6 +126,9 @@ def main(argv: list[str] | None = None) -> int:
     p_wire.add_argument("--pack", default="mattpocock/skills")
 
     sub.add_parser("evolve", help="refresh binder from wheel; update skills.sh installs")
+    p_mig = sub.add_parser("migrate", help="upgrade target contract and coord schema")
+    p_mig.add_argument("--dry-run", action="store_true")
+    p_mig.add_argument("--rollback", action="store_true")
 
     args = parser.parse_args(argv)
     root = _root()
@@ -260,6 +264,11 @@ def main(argv: list[str] | None = None) -> int:
         elif args.cmd == "evolve":
             for line in evolve(root):
                 print(line)
+        elif args.cmd == "migrate":
+            msgs = migrate(root, dry_run=args.dry_run, rollback=args.rollback)
+            for line in msgs:
+                print(line)
+            return 8 if any(m.startswith("REPORT") for m in msgs) else 0
         else:
             parser.error("unknown command")
             return 2
