@@ -90,3 +90,15 @@ def test_approving_review_allows_done(tmp_path: Path):
     set_status(tmp_path, str(wi), "reviewing")
     (tmp_path / ".spine/reviews" / f"{wi.stem}.md").write_text(APPROVING_REVIEW, encoding="utf-8")
     set_status(tmp_path, str(wi), "done")
+
+
+def test_mismatched_eval_review_revision_blocks_done(tmp_path: Path):
+    wi = _checking_item(tmp_path)
+    (tmp_path / ".spine/evals" / f"{wi.stem}.md").write_text(PASSING_EVAL, encoding="utf-8")
+    set_status(tmp_path, str(wi), "reviewing")
+    (tmp_path / ".spine/reviews" / f"{wi.stem}.md").write_text(
+        APPROVING_REVIEW.replace("revision: testhash", "revision: other"),
+        encoding="utf-8",
+    )
+    with pytest.raises(ReviewInvalid):
+        set_status(tmp_path, str(wi), "done")

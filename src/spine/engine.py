@@ -10,7 +10,7 @@ from spine.artifacts import (
     resolve_artifact,
     write_meta,
 )
-from spine.errors import InvalidTransition
+from spine.errors import InvalidTransition, ReviewInvalid
 from spine.events import append_event
 from spine.gates import require_eval, require_review
 from spine.model import load_contract
@@ -74,7 +74,12 @@ def advance(
         required = contract.software_required()
         if cur not in {"reviewing"} and "reviewing" in required:
             raise InvalidTransition("software profile requires reviewing before done")
-        require_review(root, path.stem)
+        review = require_review(root, path.stem)
+        evaluation = require_eval(root, path.stem)
+        if evaluation["revision"] != review["revision"]:
+            raise ReviewInvalid(
+                f"eval revision {evaluation['revision']!r} != review revision {review['revision']!r}"
+            )
     meta["Status"] = nxt
     write_meta(path, meta, body)
     append_event(
