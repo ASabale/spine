@@ -47,21 +47,25 @@ def _slug(title: str) -> str:
     return s or "item"
 
 
-def _next_number(folder: Path) -> int:
+def _file_max(folder: Path) -> int:
     n = 0
     if not folder.exists():
-        return 1
+        return 0
     for p in folder.glob("*.md"):
         head = p.name.split("-", 1)[0]
         if head.isdigit():
             n = max(n, int(head))
-    return n + 1
+    return n
+
+
+def _next_number(root: Path, folder: Path, kind: str) -> int:
+    return CoordStore(root).allocate_id(kind, floor=_file_max(folder))
 
 
 def new_ticket(root: Path, title: str, typ: str = "grilling") -> Path:
     folder = root / SPEC_ROOT / "tickets"
     folder.mkdir(parents=True, exist_ok=True)
-    num = _next_number(folder)
+    num = _next_number(root, folder, "tickets")
     path = folder / f"{num:02d}-{_slug(title)}.md"
     body = f"## Question\n\n{title}\n"
     text = dump_front(
@@ -76,7 +80,7 @@ def new_ticket(root: Path, title: str, typ: str = "grilling") -> Path:
 def new_work_item(root: Path, title: str, profile: str = "software") -> Path:
     folder = root / SPEC_ROOT / "work-items"
     folder.mkdir(parents=True, exist_ok=True)
-    num = _next_number(folder)
+    num = _next_number(root, folder, "work-items")
     path = folder / f"{num:02d}-{_slug(title)}.md"
     body = f"## Intent\n\n{title}\n"
     text = dump_front(
@@ -96,13 +100,20 @@ def new_work_item(root: Path, title: str, profile: str = "software") -> Path:
     return path
 
 
+def _under_spec(root: Path, path: Path) -> bool:
+    try:
+        path.resolve().relative_to((root / SPEC_ROOT).resolve())
+        return True
+    except ValueError:
+        return False
+
+
 def resolve_artifact(root: Path, spec: str) -> Path:
+    root = root.resolve()
     p = Path(spec)
-    if p.is_absolute() and p.exists():
-        return p
-    cand = root / spec
-    if cand.exists():
-        return cand
+    cand = p if p.is_absolute() else root / spec
+    if cand.exists() and _under_spec(root, cand):
+        return cand.resolve()
     for folder in ("work-items", "tickets"):
         d = root / SPEC_ROOT / folder
         if d.exists():

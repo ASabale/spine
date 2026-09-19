@@ -1,7 +1,7 @@
 # Scale and concurrency harness
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 10-atomic-claims-and-concurrency-model.md
 Owner: 
 Claimed-at: 
@@ -14,3 +14,11 @@ assert no lost claims, no lost transitions, no corruption) and a 100k-item bench
 re-number under load.
 
 Resolved = the harness + benchmark pass and gate the release. Invariants locked: #2, #5.
+
+## Answer
+
+IDs come from `CoordStore.allocate_id` (`BEGIN IMMEDIATE` on `kv`), so concurrent
+mints never share a number. `resolve_artifact` only returns paths under
+`docs/spine/`. 50 workers: one-winner stampede, and 50 parallel
+claim → doing → checking → release with 100 intact event-log lines.
+100k-item `next` < 500ms (rank-0 early exit + `os.scandir`) and `claim` < 100ms.

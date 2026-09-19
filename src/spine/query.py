@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from spine import __version__
 from spine.artifacts import identity, read_meta
 from spine.model import SPEC_ROOT, load_contract
+
+
+
+def _md_names(folder: Path) -> list[str]:
+    if not folder.is_dir():
+        return []
+    return sorted(e.name for e in os.scandir(folder) if e.name.endswith(".md") and e.is_file())
 
 
 def _ticket_blocked(meta: dict[str, str]) -> bool:
@@ -83,19 +91,31 @@ def next_lines(root: Path) -> list[str]:
             "spine init",
         ]
     wi_dir = root / SPEC_ROOT / "work-items"
-    items: list[tuple[str, Path, dict[str, str]]] = []
-    if wi_dir.is_dir():
-        for p in sorted(wi_dir.glob("*.md")):
-            meta, _ = read_meta(p)
-            items.append((meta.get("Status", ""), p, meta))
     inflight = load_contract(root).inflight
-    active = [row for row in items if row[0] in inflight]
-    active.sort(key=lambda row: inflight.index(row[0]))
-    if active:
-        return _next_for_work_item(root, active[0])
+    rank = {s: i for i, s in enumerate(inflight)}
+    best: tuple[str, Path, dict[str, str]] | None = None
+    best_rank = len(inflight)
+    ready: tuple[str, Path, dict[str, str]] | None = None
+    if wi_dir.is_dir():
+        for name in _md_names(wi_dir):
+            p = wi_dir / name
+            meta, _ = read_meta(p)
+            status = meta.get("Status", "")
+            if status in rank:
+                r = rank[status]
+                if r < best_rank:
+                    best_rank = r
+                    best = (status, p, meta)
+                    if r == 0:
+                        break
+            elif status == "ready" and ready is None:
+                ready = (status, p, meta)
+    if best is not None:
+        return _next_for_work_item(root, best)
     tk_dir = root / SPEC_ROOT / "tickets"
     if tk_dir.is_dir():
-        for p in sorted(tk_dir.glob("*.md")):
+        for name in _md_names(tk_dir):
+            p = tk_dir / name
             meta, _ = read_meta(p)
             status = meta.get("Status", "")
             if status == "claimed":
@@ -107,9 +127,8 @@ def next_lines(root: Path) -> list[str]:
             if status == "open" and not _ticket_blocked(meta) and not (meta.get("Owner") or "").strip():
                 rel = _rel(p, root)
                 return [f"spine claim {rel}"]
-    ready = [row for row in items if row[0] == "ready"]
-    if ready:
-        return _next_for_work_item(root, ready[0])
+    if ready is not None:
+        return _next_for_work_item(root, ready)
     if not _map_destination(root):
         return [
             "Edit docs/spine/maps/map.md (Destination)",

@@ -63,6 +63,8 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
 - P4 claims (2026-09-19): SQLite `claims` table, `BEGIN IMMEDIATE` one-winner,
   owner-or-stale release. Frontmatter remains the Git copy. `engine.py` has no
   sqlite. 50-worker harness is ticket 11.
+- P4 scale (2026-09-19): atomic IDs, spec-root path boundary, 50-worker
+  harness, 100k next < 500ms and claim < 100ms.
 
 
 ## Not yet specified

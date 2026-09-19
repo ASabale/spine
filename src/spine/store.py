@@ -126,3 +126,21 @@ class CoordStore:
             self._conn.rollback()
             raise
 
+    def allocate_id(self, kind: str, *, floor: int = 0) -> int:
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            row = self._conn.execute(
+                "SELECT value FROM kv WHERE key = ?", (f"id:{kind}",)
+            ).fetchone()
+            current = int(row[0]) if row else 0
+            n = max(current, floor) + 1
+            self._conn.execute(
+                "INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)",
+                (f"id:{kind}", str(n)),
+            )
+            self._conn.commit()
+            return n
+        except Exception:
+            self._conn.rollback()
+            raise
+
