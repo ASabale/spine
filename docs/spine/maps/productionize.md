@@ -40,6 +40,8 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   `changes-requested`). `Contract.validate()` rejects drift/malformed YAML.
   Packaged data file must stay byte-identical to the docs copy. Ticket machine
   still hardcoded until ticket 03.
+- P1 contract machine (2026-09-19): tickets live under `contract.yaml` `tickets:`;
+  `Contract.ticket_allowed` is the only ticket transition table.
 
 ## Not yet specified
 

@@ -1,7 +1,7 @@
 # The contract machine
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 02-reconcile-the-contract.md
 Owner: 
 Claimed-at: 
@@ -18,3 +18,15 @@ the hardcoded ticket machine (`TICKET_STATUSES`/`TICKET_TRANSITIONS` in `model.p
 This is the core deepening (Report A: "run the work-item machine from the contract" [Strong]).
 Resolved = one module; `artifacts.py`, `doctor`, `next`, `set-status`, and `claim` all consult
 it and no second machine survives. Invariants locked: #1 (done ⇒ gates), #3 (legal transitions).
+
+## Answer
+
+One `Contract` in `src/spine/model.py` owns both machines as data from
+`contract.yaml` (`statuses`/`transitions` for work items; `tickets.statuses`/
+`tickets.transitions` for map tickets). Interface on this ticket: `validate`,
+`allowed`, `ticket_allowed`. `set-status`, `doctor`, and load paths consult it;
+`TICKET_STATUSES`/`TICKET_TRANSITIONS` are gone.
+
+Deferred to later tickets (not a second hardcoded table): `advance` + typed
+errors (04), real eval/review proof (05), `next_for` / inflight as data (09),
+`is_stale` stays a thin helper over `claim.stale_hours`.

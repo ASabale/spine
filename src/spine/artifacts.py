@@ -10,8 +10,6 @@ from spine import __version__
 from spine.model import (
     EXEC_ROOT,
     SPEC_ROOT,
-    TICKET_STATUSES,
-    TICKET_TRANSITIONS,
     dump_front,
     load_contract,
     parse_front,
@@ -149,9 +147,9 @@ def set_status(root: Path, spec: str, nxt: str) -> Path:
     meta, body = read_meta(path)
     cur = meta.get("Status", "")
     if _is_ticket(path, meta):
-        if nxt not in TICKET_STATUSES:
+        if nxt not in contract.ticket_statuses:
             raise ValueError(f"unknown ticket status {nxt}")
-        if nxt not in TICKET_TRANSITIONS.get(cur, []):
+        if not contract.ticket_allowed(cur, nxt):
             raise ValueError(f"illegal ticket transition {cur} → {nxt}")
         meta["Status"] = nxt
         if nxt == "open":

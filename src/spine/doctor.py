@@ -61,7 +61,7 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
         for path in folder.glob("*.md"):
             meta, body = read_meta(path)
             status = meta.get("Status", "")
-            if status and status not in contract.statuses and status not in {"open", "claimed", "resolved"}:
+            if status and status not in contract.statuses and status not in contract.ticket_statuses:
                 msgs.append(f"REPORT unknown status {status} in {path.name}")
             if is_stale(meta, root=root):
                 msgs.append(f"STALE claim on {path.name}")
