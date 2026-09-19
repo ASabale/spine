@@ -24,10 +24,17 @@ TICKET_TRANSITIONS = {
 }
 
 
+class ContractError(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class Contract:
     raw: dict
     source: str = "packaged"
+
+    def __post_init__(self) -> None:
+        self.validate()
 
     @property
     def version(self) -> int:
@@ -48,6 +55,42 @@ class Contract:
     def allowed(self, current: str, nxt: str) -> bool:
         return nxt in self.transitions.get(current, [])
 
+    def validate(self) -> None:
+        raw = self.raw
+        if not isinstance(raw, dict):
+            raise ContractError("contract must be a mapping")
+        statuses = raw.get("statuses")
+        if not isinstance(statuses, list) or not statuses or not all(isinstance(s, str) and s for s in statuses):
+            raise ContractError("statuses must be a non-empty list of strings")
+        status_set = set(statuses)
+        transitions = raw.get("transitions")
+        if not isinstance(transitions, dict):
+            raise ContractError("transitions must be a mapping")
+        for src, dests in transitions.items():
+            if src not in status_set:
+                raise ContractError(f"unknown transition source {src}")
+            if not isinstance(dests, list) or not all(isinstance(d, str) for d in dests):
+                raise ContractError(f"transitions[{src}] must be a list of strings")
+            for dest in dests:
+                if dest not in status_set:
+                    raise ContractError(f"unknown transition target {dest}")
+        missing = [s for s in statuses if s not in transitions]
+        if missing:
+            raise ContractError(f"status missing from transitions: {missing}")
+        required = ((raw.get("profiles") or {}).get("software") or {}).get("required_before_done") or []
+        if not isinstance(required, list):
+            raise ContractError("profiles.software.required_before_done must be a list")
+        for item in required:
+            if item not in status_set:
+                raise ContractError(f"required_before_done unknown status {item}")
+        hours = (raw.get("claim") or {}).get("stale_hours")
+        if not isinstance(hours, int) or isinstance(hours, bool) or hours <= 0:
+            raise ContractError("claim.stale_hours must be a positive int")
+        try:
+            int(raw.get("version"))
+        except (TypeError, ValueError):
+            raise ContractError("version must be an int") from None
+
     def software_required(self) -> list[str]:
         return list(self.raw["profiles"]["software"]["required_before_done"])
 
@@ -59,15 +102,23 @@ class Contract:
         return nxt
 
 
+def _from_text(text: str, source: str) -> Contract:
+    try:
+        raw = yaml.safe_load(text)
+    except yaml.YAMLError as exc:
+        raise ContractError(f"invalid contract YAML: {exc}") from exc
+    return Contract(raw, source=source)
+
+
 def packaged_contract() -> Contract:
-    return Contract(yaml.safe_load(read_data("contract.yaml")), source="packaged")
+    return _from_text(read_data("contract.yaml"), "packaged")
 
 
 def load_contract(root: Path | None = None) -> Contract:
     if root is not None:
         path = root / SPEC_ROOT / "contract.yaml"
         if path.exists():
-            return Contract(yaml.safe_load(path.read_text(encoding="utf-8")), source=str(path))
+            return _from_text(path.read_text(encoding="utf-8"), str(path))
     return packaged_contract()
 
 

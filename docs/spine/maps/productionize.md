@@ -35,6 +35,11 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   CI/release/security/migration); spine's target becomes fleet-capable.
 - Architecture rating (2026-09-19): 6.5/10 (B−); the load-bearing fixes are centralizing the
   state machine and making eval/review real machine-verifiable gates.
+- P0 contract SSoT (2026-09-19): option (b). Work-item statuses/transitions live
+  in `contract.yaml` (`ready`, `doing`, `checking`, `reviewing`, `done`,
+  `changes-requested`). `Contract.validate()` rejects drift/malformed YAML.
+  Packaged data file must stay byte-identical to the docs copy. Ticket machine
+  still hardcoded until ticket 03.
 
 ## Not yet specified
 
