@@ -6,12 +6,12 @@ Implement spine from [spec.md](spec.md) plus this file. Product code lives here 
 
 1. Read [spec.md](spec.md), [CONTEXT.md](CONTEXT.md).
 2. `spine prime`. Run the first command in `run`. `spine status` is the human board.
-3. Verify: `uv run pytest`.
+3. Verify: `uv run pytest` or `make test`. Ship gate: `make release`.
 4. CLI owns metadata; agents own content. Binder skills never restate the contract.
 5. Craft skills come from skills.sh (`npx skills add mattpocock/skills`), not vendored.
 
 ## Standing constraints
 
 - Harness/agent/platform agnostic. No required plugin API.
-- Auto-evolve: `spine evolve`. Self-recover: `spine doctor`.
+- Auto-evolve: `spine evolve`. Self-recover: `spine doctor`. Contract/schema: `spine migrate`.
 - Do not edit `/Users/akshay/Development/generic-workflows`.

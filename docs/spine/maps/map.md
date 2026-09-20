@@ -17,14 +17,19 @@ another orchestration pass. One ticket per session. The reviewer does not edit.
 - [Dogfood this target](../tickets/01-dogfood-this-target.md): live-repo dogfood
   (not the throwaway proof). Docs=code on 0.2.0; Claim is one-winner; publish
   stays later.
+- [Review the productionize diff](../tickets/14-review-the-productionize-diff.md):
+  code matches productionize tickets; spec/README/binder lagged. Architecture
+  top remaining: deepen Claim. Not graduated onto this map.
+- [Align spec.md with the 0.2.0 tree](../tickets/15-align-spec-md-with-the-0-2-0-tree.md):
+  spec, README, binder eval/review, productionize fog, CHANGELOG describe the
+  shipped machine.
 
 ## Not yet specified
 
 - Publish/tag a 0.3.0 (version, changelog, PyPI).
-- Engine gaps the reviewer may report — only graduate if they belong on this
-  docs=code destination.
 
 ## Out of scope
 
 Hosted orchestration; multi-repo / cross-machine coordination; rewriting the
-0.2.0 machine; changing shipped 0.1.0/0.2.0 history.
+0.2.0 machine; changing shipped 0.1.0/0.2.0 history; deepening Claim / doctor /
+board (ticket 14) unless a later map names that work.

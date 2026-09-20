@@ -69,29 +69,15 @@ P5 product (CI/release/security/migration) → P6 dogfood spine on spine.
   dry-run/apply/rollback. CI runs the gate. Path/symlink boundary + no shell=True.
 - P6 dogfood (2026-09-19): full route with crash recovery and a second
   worker. Example: docs/spine/examples/dogfood.md. Test: tests/test_dogfood.py.
-
+- Review (2026-09-20): two-axis pass since `6b48b03`. Spec of the code holds;
+  docs lagged. Remaining deepenings (Claim as one module, doctor through
+  engine, one board scan) are **not** this effort — see ticket 14.
 
 ## Not yet specified
 
-The route (each an open decision ticket, resolved one per session; clearing a resolved
-blocker unblocks the next):
-
-- P0 — [Reconcile the contract](../tickets/02-reconcile-the-contract.md)
-- P1 — [The contract machine](../tickets/03-the-contract-machine.md)
-- P1 — [The transition engine](../tickets/04-the-transition-engine.md)
-- P1 — [Real gates: eval and review](../tickets/05-real-gates-eval-and-review.md)
-- P2 — [Layering and persistence seam](../tickets/06-layering-and-persistence-seam.md)
-- P3 — [Evidence, event log and revision binding](../tickets/07-evidence-event-log-and-revision-binding.md)
-- P3 — [Doctor as recovery loop](../tickets/08-doctor-as-recovery-loop.md)
-- P3 — [Deterministic next and structured run](../tickets/09-deterministic-next-and-structured-run.md)
-- P4 — [Atomic claims and concurrency model](../tickets/10-atomic-claims-and-concurrency-model.md)
-- P4 — [Scale and concurrency harness](../tickets/11-scale-and-concurrency-harness.md)
-- P5 — [Release, CI, security and migration](../tickets/12-release-ci-security-and-migration.md)
-- P6 — [Dogfood spine on spine](../tickets/13-dogfood-spine-on-spine.md)
-
-Fog (sharpen as the route resolves): the exact SQLite coordination schema; the exact
-eval/review JSON schemas; lease/renewal semantics; the migration mapping from 0.1.0; the
-security threat model; whether the ticket table moves into `contract.yaml`.
+Route complete (P0–P6 resolved). Fog that sharpened: claims table, YAML
+eval/review, stale-hours lease, `spine migrate`, ticket table in
+`contract.yaml`. Nothing left on this map.
 
 ## Out of scope
 

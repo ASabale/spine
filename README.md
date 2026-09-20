@@ -1,6 +1,6 @@
 # spine
 
-Harness-agnostic process spine. Planning is a map + tickets. Execution is a work item. Files in the **target** are the source of truth.
+Harness-agnostic process spine. Planning is a map + tickets. Execution is a work item. Files in the **target** are the source of truth. Claims are one-winner. Eval/review gates are YAML mappings bound to the work-item body hash.
 
 MIT. CLI command `spine`. PyPI: [spine-cli](https://pypi.org/project/spine-cli/). GitHub: [ASabale/spine](https://github.com/ASabale/spine).
 
@@ -22,9 +22,10 @@ make test
 
 1. `spine init` — spec dirs, starter map, `.spine/`, gitignore, binder skills, default `wires.yaml`
 2. `spine prime` — agent sit-down (doctor + next as JSON). Humans: `spine doctor` then `spine next` / `spine status`
-3. `spine run` — print the first executable `spine …` command
+3. `spine run` — print the first executable `spine …` command (`run` is `{cmd, hitl}` mappings)
 4. `spine wire --install` — `npx skills add mattpocock/skills` (skills.sh). Needs `npx`.
 5. `spine evolve` — refresh binder from the wheel; `npx skills update` if present
+6. `spine migrate` — upgrade `contract.yaml` and coord schema (`--dry-run` / apply / `--rollback`)
 
 ## Verbs
 

@@ -17,6 +17,6 @@ Checked-in **spec tier** (this tree):
 - `wires.yaml` — binder concern → skills.sh craft skills
 - `contract.yaml` — statuses and transitions (do not restate in skills)
 
-Gitignored **execution tier** lives in `.spine/` (`evals`, `reviews`, `handoffs`, `doctor`, `claims`).
+Gitignored **execution tier** lives in `.spine/` (`evals`, `reviews`, `handoffs`, `doctor`, `claims`, `events.jsonl`, `coord.db`, `migrate`).
 
 Craft: `spine wire --install` (skills.sh). Bodies are not vendored here.

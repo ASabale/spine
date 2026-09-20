@@ -37,7 +37,7 @@ A written spec (`spec.md`) for **spine** — a public toolkit: an evolvable, har
 
 ## Not yet specified
 
-- Contract versioning and how existing artifacts migrate when the machine evolves.
+- Contract versioning beyond the shipped `spine migrate` (0.2.0 tree).
 - Optional per-harness adapters (hooks, plugins) — never required for correctness.
 - A docs-only type profile besides the software profile.
 - How already-wayfinding folders (agent-companion, finances, …) relate to a spine-inited target.
