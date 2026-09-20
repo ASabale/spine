@@ -4,10 +4,8 @@
 
 Tree version **0.2.0**. Published as **spine-cli 0.2.0** on PyPI and GitHub (`v0.2.0`). Sit-down: `spine prime`. Exec: `spine run`.
 
-Productionize route (full orchestration): tickets 02–13 resolved. Product ticket `01-dogfood-this-target` stays open HITL.
-
-P6 delivered: e2e dogfood route with crash recovery, concurrent loser, real eval/review. Canonical write-up: docs/spine/examples/dogfood.md.
+Ticket `01-dogfood-this-target` is **resolved**. This repo is the dogfood target. `docs/spine/maps/map.md` destination is docs=code on the 0.2.0 tree. CONTEXT Claim is one-winner. Next: claim `14-review-the-productionize-diff` (blocks `15-align-spec-md-with-the-0-2-0-tree`). Publish/tag stays fog.
 
 ## Next Steps
 
-Stranger install: `uvx --from spine-cli spine init`. Verify: `make test`.
+`spine claim docs/spine/tickets/14-review-the-productionize-diff.md`. Reviewer does not edit. Verify: `make test`.

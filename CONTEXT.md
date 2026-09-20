@@ -45,8 +45,8 @@ A type profile on the same contract for code work (build / eval / review). Optio
 _Avoid_: the pipeline, 16-status machine
 
 **Claim**:
-Solo-first lock on a work item (owner + stale release) so a second agent or human does not require a rewrite.
-_Avoid_: assignee (tracker-specific), lock
+One-winner lock on a ticket or work item (owner + stale release). A second agent or human loses; they do not rewrite the artifact to take it.
+_Avoid_: assignee (tracker-specific), lock, mutex, solo-first
 
 **Spec tier**:
 Checked-in artifact files in the target (maps, tickets, work items, decisions). Shared with clones.
