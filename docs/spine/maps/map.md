@@ -4,7 +4,8 @@
 
 This target's product docs match the fleet-capable spine already in the tree.
 `spec.md`, `CONTEXT.md`, and README describe one-winner claims, real eval/review
-gates, doctor recovery, and `spine migrate`. Publish/tag is later.
+gates, doctor recovery, and `spine migrate`. spine-cli **0.3.0** is on PyPI
+(`v0.3.0`).
 
 ## Notes
 
@@ -23,10 +24,11 @@ another orchestration pass. One ticket per session. The reviewer does not edit.
 - [Align spec.md with the 0.2.0 tree](../tickets/15-align-spec-md-with-the-0-2-0-tree.md):
   spec, README, binder eval/review, productionize fog, CHANGELOG describe the
   shipped machine.
+- Published spine-cli **0.3.0** on PyPI and tagged `v0.3.0`.
 
 ## Not yet specified
 
-- Publish/tag a 0.3.0 (version, changelog, PyPI).
+Nothing left on this map.
 
 ## Out of scope
 

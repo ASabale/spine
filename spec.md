@@ -8,7 +8,7 @@ License: **MIT**. Product, GitHub slug, docs, and CLI command: **spine**. PyPI d
 
 Durable process across sessions: a **map** plus **tickets** for planning; a **work item** for execution (status, owner, claim, links, next gate). Repo files in the target are the source of truth. No harness API is required for correctness. Optional adapters later; never required.
 
-The 0.2.0 tree is fleet-capable: one-winner claims, machine-verifiable eval/review gates, doctor recovery, structured `run`, and `spine migrate`. `docs/spine/contract.yaml` is the single source of truth for statuses and transitions.
+The 0.3.0 tree is fleet-capable: one-winner claims, machine-verifiable eval/review gates, doctor recovery, structured `run`, and `spine migrate`. `docs/spine/contract.yaml` is the single source of truth for statuses and transitions.
 
 ## Stranger install
 
@@ -147,7 +147,6 @@ Eval/review binder skills write YAML mappings (`passed` / `verdict` + revision),
 - Whether init scaffolds CONTEXT.md / ADR conventions.
 - Work-item templates (PRD, blueprint).
 - User-level vs project-level install besides `uvx` + init.
-- Publish/tag beyond the already-shipped 0.2.0.
 - Funneling claim/release/doctor repairs through `advance`; HITL as a hard gate inside `advance` (ticket 04 deferred).
 
 ## Auto-evolve, recover, and skill wires (v1 addendum)
