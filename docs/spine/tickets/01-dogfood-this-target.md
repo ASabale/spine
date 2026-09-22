@@ -2,8 +2,8 @@
 
 Type: grilling
 Status: resolved
-Owner: ASabale
-Claimed-at: 2026-09-20T00:36:09.576753+00:00
+Owner: 
+Claimed-at: 
 Blocked by: 
 
 ## Question

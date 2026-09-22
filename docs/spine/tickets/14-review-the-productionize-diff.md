@@ -2,8 +2,8 @@
 
 Type: task
 Status: resolved
-Owner: ASabale
-Claimed-at: 2026-09-20T00:44:09.307624+00:00
+Owner: 
+Claimed-at: 
 Blocked by: 
 
 ## Question
