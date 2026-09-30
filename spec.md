@@ -36,11 +36,16 @@ docs/spine/contract.yaml
 docs/spine/wires.yaml
 ```
 
-**Execution tier** (gitignored; init writes `.gitignore` for `.spine/`):
+**Proofs** (checked in; a clone can verify the gates):
 
 ```text
 .spine/evals/
 .spine/reviews/
+```
+
+**Execution tier** (gitignored; init writes `.gitignore` for the rest of `.spine/`):
+
+```text
 .spine/handoffs/
 .spine/doctor/
 .spine/claims/

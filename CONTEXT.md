@@ -53,5 +53,5 @@ Checked-in artifact files in the target (maps, tickets, work items, decisions). 
 _Avoid_: source of truth (the whole target-file set is SSoT, including local execution files on that machine)
 
 **Execution tier**:
-Gitignored local files (claims runtime, evals, handoffs, doctor output). Not required for a clone to be correct, required for a running session to resume on that machine.
+Local runtime under `.spine/` (claims, handoffs, doctor output, `coord.db`, `events.jsonl`). Eval and review YAML in `.spine/evals/` and `.spine/reviews/` are checked in so a clone can verify the gates.
 _Avoid_: state, cache

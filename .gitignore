@@ -3,7 +3,10 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-.spine/
+# spine execution tier
+.spine/*
+!.spine/evals/
+!.spine/reviews/
 dist/
 .coverage
 htmlcov/

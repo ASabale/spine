@@ -42,6 +42,16 @@ def _logged_status(root: Path, path: Path) -> str | None:
     return last
 
 
+def _gitignore_hides_proofs(text: str) -> bool:
+    """True when a clone would not receive eval and review YAML."""
+    stripped = {ln.strip() for ln in text.splitlines()}
+    if ".spine/" in stripped:
+        return True
+    if ".spine/*" in stripped or ".spine/**" in stripped:
+        return "!.spine/evals/" not in stripped or "!.spine/reviews/" not in stripped
+    return False
+
+
 def doctor_ok(msgs: list[str]) -> bool:
     """True when nothing unrepaired remains (FIX lines count as repaired)."""
     if not msgs:
@@ -88,8 +98,11 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
             msgs.append(f"REPORT missing spec file {rel}")
 
     gi = root / ".gitignore"
-    if not gi.exists() or ".spine/" not in gi.read_text(encoding="utf-8"):
+    gitignore = gi.read_text(encoding="utf-8") if gi.exists() else ""
+    if ".spine/" not in gitignore:
         msgs.append("REPORT gitignore missing .spine/")
+    elif _gitignore_hides_proofs(gitignore):
+        msgs.append("REPORT gitignore hides .spine/evals and .spine/reviews")
 
     folders = []
     for name in ("work-items", "tickets"):

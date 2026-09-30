@@ -25,15 +25,43 @@ Checked-in **spec tier** (this tree):
 - `wires.yaml` — binder concern → skills.sh craft skills
 - `contract.yaml` — statuses and transitions (do not restate in skills)
 
-Gitignored **execution tier** lives in `.spine/` (`evals`, `reviews`, `handoffs`, `doctor`, `claims`, `events.jsonl`, `coord.db`, `migrate`).
+Checked-in **proofs** live in `.spine/evals/` and `.spine/reviews/` so a clone can verify the gates. The rest of `.spine/` stays gitignored (`handoffs`, `doctor`, `claims`, `events.jsonl`, `coord.db`, `migrate`).
 
 Craft: `spine wire --install` (skills.sh). Bodies are not vendored here.
 """
 
-GITIGNORE_BLOCK = """
-# spine execution tier
-.spine/
+GITIGNORE_BLOCK = """# spine execution tier
+.spine/*
+!.spine/evals/
+!.spine/reviews/
 """
+
+
+def _ensure_gitignore(text: str) -> str:
+    """Ignore runtime files under `.spine/` and keep eval and review YAML."""
+    lines = text.splitlines()
+    stripped = [ln.strip() for ln in lines]
+    complete = (
+        ".spine/*" in stripped
+        and "!.spine/evals/" in stripped
+        and "!.spine/reviews/" in stripped
+        and ".spine/" not in stripped
+    )
+    if complete:
+        return text if text.endswith("\n") or text == "" else text + "\n"
+    owned = {
+        "# spine execution tier",
+        ".spine/",
+        ".spine/*",
+        "!.spine/evals/",
+        "!.spine/reviews/",
+    }
+    kept = [ln for ln in lines if ln.strip() not in owned]
+    block = GITIGNORE_BLOCK.strip("\n")
+    base = "\n".join(kept).rstrip()
+    if base:
+        return base + "\n" + block + "\n"
+    return block + "\n"
 
 MAP = """# Map
 
@@ -92,11 +120,9 @@ def init_target(root: Path, *, refresh: bool = False) -> list[str]:
 
     gi = root / ".gitignore"
     existing = gi.read_text(encoding="utf-8") if gi.exists() else ""
-    if ".spine/" not in existing:
-        gi.write_text(
-            existing.rstrip() + "\n" + GITIGNORE_BLOCK if existing else GITIGNORE_BLOCK.lstrip("\n"),
-            encoding="utf-8",
-        )
+    updated = _ensure_gitignore(existing)
+    if updated != existing:
+        gi.write_text(updated, encoding="utf-8")
         notes.append("updated .gitignore")
 
     binder_src = data_root() / "binder"

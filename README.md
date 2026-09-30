@@ -74,7 +74,7 @@ Checked-in **spec tier** (`docs/spine/`):
 - `contract.yaml` — statuses and transitions
 - `wires.yaml` — binder concern → skills.sh craft skills
 
-Gitignored **execution tier** (`.spine/`): evals, reviews, handoffs, doctor, claims, `events.jsonl`, `coord.db`, migrate.
+Checked-in **proofs** (`.spine/evals/`, `.spine/reviews/`): a clone can verify the gates. The rest of `.spine/` stays gitignored: handoffs, doctor, claims, `events.jsonl`, `coord.db`, migrate.
 
 ## CLI
 
