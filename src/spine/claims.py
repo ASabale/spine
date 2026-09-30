@@ -115,6 +115,14 @@ def claim(root: Path, spec: str) -> Path:
     return path
 
 
+def clear_lock(root: Path, path: Path) -> None:
+    """Drop the coord row and the runtime claim file. Does not touch frontmatter."""
+    CoordStore(root).drop_claim(str(path.relative_to(root)), force=True)
+    rt = _runtime(root, path)
+    if rt.exists():
+        rt.unlink()
+
+
 def release(root: Path, spec: str, *, force: bool = False) -> Path:
     """Release `spec`'s claim: the owner, a forced caller, or a stale lease.
     Clears the three representations in lockstep and flips claimed back to

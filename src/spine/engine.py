@@ -47,6 +47,9 @@ def advance(
             raise InvalidTransition(f"illegal ticket transition {cur} → {nxt}")
         meta["Status"] = nxt
         if nxt == "open":
+            from spine.claims import clear_lock
+
+            clear_lock(root, path)
             meta["Owner"] = ""
             meta["Claimed-at"] = ""
         write_meta(path, meta, body)

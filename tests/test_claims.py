@@ -4,7 +4,7 @@ import pytest
 
 import spine.artifacts as artifacts
 import spine.claims as claims
-from spine.artifacts import claim, new_ticket, read_meta, release
+from spine.artifacts import claim, new_ticket, read_meta, release, set_status
 from spine.errors import ClaimConflict
 from spine.initcmd import init_target
 from spine.store import CoordStore
@@ -58,3 +58,19 @@ def test_release_rejects_non_owner(tmp_path: Path, monkeypatch):
     assert not meta.get("Owner")
     assert meta["Status"] == "open"
     assert CoordStore(tmp_path).get_claim(str(tk.relative_to(tmp_path))) is None
+
+
+def test_advance_to_open_drops_the_coord_row(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("SPINE_USER", "ada")
+    init_target(tmp_path)
+    tk = new_ticket(tmp_path, "Claim me")
+    claim(tmp_path, str(tk))
+    rel = str(tk.relative_to(tmp_path))
+    set_status(tmp_path, rel, "open")
+    meta, _ = read_meta(tk)
+    assert meta["Status"] == "open"
+    assert not (meta.get("Owner") or "")
+    assert not (meta.get("Claimed-at") or "")
+    assert CoordStore(tmp_path).get_claim(rel) is None
+    runtime = tmp_path / ".spine" / "claims" / f"{tk.stem}.claim"
+    assert not runtime.exists()
