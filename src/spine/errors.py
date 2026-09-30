@@ -21,6 +21,18 @@ class ReviewInvalid(SpineError):
 class ContractError(SpineError):
     exit_code = 5
 
+
+class AmbiguousArtifact(SpineError):
+    """More than one artifact matches. Callers must not pick a winner."""
+
+    exit_code = 5
+
+    def __init__(self, spec: str, matches: list[str]):
+        self.spec = spec
+        self.matches = list(matches)
+        listed = ", ".join(self.matches)
+        super().__init__(f"ambiguous artifact {spec}: {listed}")
+
 class HumanInterventionRequired(SpineError):
     exit_code = 6
 

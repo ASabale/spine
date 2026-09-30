@@ -6,13 +6,13 @@ Tree version **0.3.0**. Published as **spine-cli 0.3.0** on PyPI and GitHub (`v0
 
 **1.0 tickets are sliced for one local-agent session each (2026-09-23).** Map: `docs/spine/maps/1.0.md`. Tickets **16–42**. Coverage is ticket 42, not ticket 36. Ticket 36 is changelog and version only. Ticket 38 is a human checklist (no tag, no push, no publish).
 
-Ticket 16's code is delivered. `spine.claims` owns claim, release, staleness, and identity. `artifacts` re-exports those four names. `uv run pytest`: 161 passed. The ticket's Status was not edited by hand. Plan: `research/2026-09-30-execution-plan.md`.
+Ticket 16's code is delivered. `spine.claims` owns claim, release, staleness, and identity. `artifacts` re-exports those four names. Ticket 20 requires `SPINE_HUMAN=1` for a new work item and for `reviewing` → `done`. The CLI and doctor share one resolver: a path, an exact name, a zero-padded `NN-` number, or a unique substring. `1` binds `01-…` and does not bind `11-…` or `116-…`. Two matches raise, and doctor leaves an ambiguous blocker in place. `uv run pytest`: 173 passed. Status was not edited by hand. Plan: `research/2026-09-30-execution-plan.md`.
 
 Second waits are hard stops in `## Question`, not a `Gates:` line. `Blocked by` stays one filename.
 
 ## Next Steps
 
-Next spine code: one resolver for the CLI and doctor, then eval and review proofs that survive a clone. Ticket 20 requires `SPINE_HUMAN=1` for a new work item and for `reviewing` → `done`. Finance recorded-close is in `/Users/akshay/Development/finance` (`close.ts`). Do not tag or publish.
+Next spine code: eval and review proofs that a clone can read. `coord.db` and claim files stay gitignored. Finance recorded-close is in `/Users/akshay/Development/finance` (`close.ts`). Do not tag or publish.
 
 
 [You have received this identical output 3 times. Re-reading '/Users/akshay/Development/spine/HANDOFF.md:raw' will not change it — use a narrower selector (path:A-B), or proceed with the edit.]

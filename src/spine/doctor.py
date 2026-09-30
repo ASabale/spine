@@ -3,37 +3,27 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from spine.artifacts import _is_ticket, is_stale, read_meta, release, write_meta
+from spine.artifacts import (
+    _is_ticket,
+    is_stale,
+    read_meta,
+    release,
+    resolve_artifact,
+    write_meta,
+)
+from spine.errors import AmbiguousArtifact
 from spine.model import EXEC_ROOT, SPEC_DIRS, SPEC_ROOT, load_contract, packaged_contract
 
 
-def _blocker_number(value: str) -> int | None:
-    head = value.strip().split("-", 1)[0].split("/", 1)[-1]
-    if head.isdigit():
-        return int(head)
-    return None
-
-
 def _find_blocker(root: Path, value: str) -> Path | None:
+    """Resolve a blocker among tickets. Missing is None; ambiguous propagates."""
     raw = value.strip()
     if not raw:
         return None
-    tickets = root / SPEC_ROOT / "tickets"
-    if not tickets.is_dir():
+    try:
+        return resolve_artifact(root, raw, folders=("tickets",))
+    except FileNotFoundError:
         return None
-    cand = root / raw
-    if cand.exists() and cand.parent == tickets:
-        return cand
-    named = tickets / Path(raw).name
-    if named.exists():
-        return named
-    num = _blocker_number(raw)
-    if num is None:
-        return None
-    for p in tickets.glob("*.md"):
-        if p.name.split("-", 1)[0] == f"{num:02d}":
-            return p
-    return None
 
 
 def _logged_status(root: Path, path: Path) -> str | None:
@@ -152,21 +142,27 @@ def doctor(root: Path, *, apply: bool = True) -> list[str]:
 
             blocked = (meta.get("Blocked by") or "").strip()
             if blocked:
-                blocker = _find_blocker(root, blocked)
-                if blocker is None:
-                    msgs.append(f"BROKEN blocker {path.name} → {blocked}")
-                    if apply:
-                        meta["Blocked by"] = ""
-                        write_meta(path, meta, body)
-                        msgs.append(f"FIX cleared Blocked by on {path.name} ({blocked} missing)")
+                try:
+                    blocker = _find_blocker(root, blocked)
+                except AmbiguousArtifact:
+                    msgs.append(f"REPORT ambiguous blocker {path.name} → {blocked}")
                 else:
-                    bmeta, _ = read_meta(blocker)
-                    if (bmeta.get("Status") or "") == "resolved":
-                        msgs.append(f"RESOLVED blocker {path.name} → {blocked}")
+                    if blocker is None:
+                        msgs.append(f"BROKEN blocker {path.name} → {blocked}")
                         if apply:
                             meta["Blocked by"] = ""
                             write_meta(path, meta, body)
-                            msgs.append(f"FIX cleared Blocked by on {path.name} ({blocked} resolved)")
+                            msgs.append(f"FIX cleared Blocked by on {path.name} ({blocked} missing)")
+                    else:
+                        bmeta, _ = read_meta(blocker)
+                        if (bmeta.get("Status") or "") == "resolved":
+                            msgs.append(f"RESOLVED blocker {path.name} → {blocked}")
+                            if apply:
+                                meta["Blocked by"] = ""
+                                write_meta(path, meta, body)
+                                msgs.append(
+                                    f"FIX cleared Blocked by on {path.name} ({blocked} resolved)"
+                                )
 
     out = root / EXEC_ROOT / "doctor" / "last.txt"
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -166,6 +166,39 @@ def test_cli_doctor_apply_exits_0_after_repair(tmp_path: Path, monkeypatch):
     assert not (meta.get("Blocked by") or "").strip()
 
 
+def test_doctor_does_not_clear_ambiguous_number(tmp_path: Path):
+    init_target(tmp_path)
+    alpha = new_ticket(tmp_path, "Alpha")
+    also = new_ticket(tmp_path, "Also")
+    also.rename(also.with_name("01-also.md"))
+    meta, body = read_meta(alpha)
+    meta["Status"] = "resolved"
+    write_meta(alpha, meta, body)
+    later = new_ticket(tmp_path, "Later")
+    meta, body = read_meta(later)
+    meta["Blocked by"] = "1"
+    write_meta(later, meta, body)
+    msgs = doctor(tmp_path, apply=True)
+    assert any("ambiguous blocker" in m and later.name in m for m in msgs)
+    meta, _ = read_meta(later)
+    assert meta.get("Blocked by") == "1"
+    assert doctor_ok(msgs) is False
+
+
+def test_doctor_clears_number_that_only_shares_a_digit(tmp_path: Path):
+    init_target(tmp_path)
+    one = new_ticket(tmp_path, "One")
+    one.rename(one.with_name("11-one.md"))
+    later = new_ticket(tmp_path, "Later")
+    meta, body = read_meta(later)
+    meta["Blocked by"] = "1"
+    write_meta(later, meta, body)
+    msgs = doctor(tmp_path, apply=True)
+    assert any("FIX cleared Blocked by" in m for m in msgs)
+    meta, _ = read_meta(later)
+    assert not (meta.get("Blocked by") or "").strip()
+
+
 def test_doctor_fix_line_has_before_after_why(tmp_path: Path):
     init_target(tmp_path)
     wi = new_work_item(tmp_path, "Ship CLI")

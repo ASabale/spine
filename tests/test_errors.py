@@ -1,4 +1,5 @@
 from spine.errors import (
+    AmbiguousArtifact,
     ClaimConflict,
     ContractError,
     EvaluationInvalid,
@@ -22,6 +23,7 @@ def test_exit_codes():
     assert EvaluationInvalid("evals").exit_code == 5
     assert ReviewInvalid("reviews").exit_code == 5
     assert ContractError("bad yaml").exit_code == 5
+    assert AmbiguousArtifact("1", ["docs/spine/tickets/01-a.md"]).exit_code == 5
     assert HumanInterventionRequired("reviewing").exit_code == 6
     assert ExternalError("npx").exit_code == 7
     assert InconsistentState("corrupt").exit_code == 8
@@ -36,3 +38,4 @@ def test_exit_code_for_legacy_and_typed():
     assert exit_code_for(InvalidTransition("x")) == 3
     assert exit_code_for(ValueError("legacy")) == 1
     assert exit_code_for(FileNotFoundError("missing")) == 1
+    assert exit_code_for(AmbiguousArtifact("1", ["a", "b"])) == 5

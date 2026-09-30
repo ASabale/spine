@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from spine.claims import claim, identity, is_stale, release  # noqa: F401  (re-export)
-from spine.errors import HumanInterventionRequired
+from spine.errors import AmbiguousArtifact, HumanInterventionRequired
 from spine.model import (
     EXEC_ROOT,
     SPEC_ROOT,
@@ -76,28 +76,88 @@ def new_work_item(root: Path, title: str, profile: str = "software") -> Path:
     return path
 
 
-def _under_spec(root: Path, path: Path) -> bool:
-    try:
-        path.resolve().relative_to((root / SPEC_ROOT).resolve())
-        return True
-    except ValueError:
-        return False
+def _artifact_files(root: Path, folders: tuple[str, ...]) -> list[Path]:
+    found: list[Path] = []
+    for name in folders:
+        folder = root / SPEC_ROOT / name
+        if not folder.is_dir():
+            continue
+        base = folder.resolve()
+        for path in folder.glob("*.md"):
+            if path.is_symlink():
+                resolved = path.resolve()
+                try:
+                    resolved.relative_to(base)
+                except ValueError:
+                    continue
+                found.append(resolved)
+                continue
+            if path.is_file():
+                found.append(path)
+    return found
 
 
-def resolve_artifact(root: Path, spec: str) -> Path:
-    root = root.resolve()
-    p = Path(spec)
-    cand = p if p.is_absolute() else root / spec
-    if cand.exists() and _under_spec(root, cand):
-        return cand.resolve()
-    for folder in ("work-items", "tickets"):
-        d = root / SPEC_ROOT / folder
-        if d.exists():
-            for f in d.glob("*.md"):
-                if spec in f.name or spec in f.stem:
-                    if _under_spec(root, f):
-                        return f.resolve()
+def _direct_file(root: Path, token: str, folders: tuple[str, ...]) -> Path | None:
+    raw = Path(token)
+    cand = raw if raw.is_absolute() else root / token
+    if not cand.is_file():
+        return None
+    resolved = cand.resolve()
+    for name in folders:
+        base = (root / SPEC_ROOT / name).resolve()
+        try:
+            resolved.relative_to(base)
+        except ValueError:
+            continue
+        return resolved
+    return None
+
+
+def _one_match(root: Path, spec: str, matches: list[Path]) -> Path:
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        rels = sorted(str(path.relative_to(root)) for path in matches)
+        raise AmbiguousArtifact(spec, rels)
     raise FileNotFoundError(spec)
+
+
+def resolve_artifact(
+    root: Path,
+    spec: str,
+    *,
+    folders: tuple[str, ...] = ("work-items", "tickets"),
+) -> Path:
+    """Bind spec to one markdown artifact under the searched folders.
+
+    An existing path wins, then an exact filename, stem, or relative path,
+    then a pure number as a zero-padded ``NN-`` prefix. Any other token must
+    be a unique substring. A pure number does not fall through to a substring,
+    and more than one match raises.
+    """
+    root = root.resolve()
+    token = spec.strip()
+    if not token:
+        raise FileNotFoundError(spec)
+    direct = _direct_file(root, token, folders)
+    if direct is not None:
+        return direct
+    files = _artifact_files(root, folders)
+    exact = [
+        path
+        for path in files
+        if path.name == Path(token).name
+        or path.stem == token
+        or str(path.relative_to(root)) == token
+    ]
+    if exact:
+        return _one_match(root, token, exact)
+    if token.isdigit():
+        prefix = f"{int(token):02d}-"
+        numbered = [path for path in files if path.name.startswith(prefix)]
+        return _one_match(root, token, numbered)
+    fuzzy = [path for path in files if token in path.name or token in path.stem]
+    return _one_match(root, token, fuzzy)
 
 
 def read_meta(path: Path) -> tuple[dict[str, str], str]:
