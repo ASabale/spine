@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from spine import __version__
+from spine.events import latest_reason
 from spine.artifacts import (
     board,
     claim,
@@ -202,12 +203,16 @@ def main(argv: list[str] | None = None) -> int:
                             "file": str(path.relative_to(root)),
                             "meta": meta,
                             "body": body,
+                            "reason": latest_reason(root, path),
                         },
                         indent=2,
                     )
                 )
             else:
-                print(path.read_text(encoding="utf-8"), end="")
+                text = path.read_text(encoding="utf-8")
+                print(text, end="" if text.endswith("\n") else "\n")
+                reason = latest_reason(root, path)
+                print(f"reason: {reason}" if reason else "reason:")
         elif args.cmd == "run":
             payload = status_payload(root)
             run = payload["run"]

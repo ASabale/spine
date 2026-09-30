@@ -3,7 +3,7 @@ import inspect
 import json
 from pathlib import Path
 
-from spine.events import append_event, content_revision
+from spine.events import append_event, content_revision, load_event
 from spine.initcmd import init_target
 
 
@@ -29,6 +29,12 @@ def test_append_event_writes_one_json_line(tmp_path: Path):
     assert ev["run_id"] == "run-1"
     assert ev["spec"] == "01-ship.md"
     assert isinstance(ev["time"], str) and ev["time"]
+
+
+def test_old_event_line_still_parses():
+    ev = load_event('{"actor":"a","from":"ready","to":"doing","spec":"01.md"}')
+    assert ev["op"] == "status"
+    assert ev["reason"] == ""
 
 
 def test_append_event_is_append_only(tmp_path: Path):

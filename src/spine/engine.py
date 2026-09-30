@@ -61,6 +61,7 @@ def advance(
             revision=digest,
             run_id=run_id,
             spec=spec,
+            reason=reason,
         )
         return AdvanceResult(path=path, previous=cur, status=nxt, changed=True)
     if nxt not in contract.statuses:
@@ -106,5 +107,6 @@ def advance(
         revision=digest,
         run_id=run_id,
         spec=spec,
+        reason=reason,
     )
     return AdvanceResult(path=path, previous=cur, status=nxt, changed=True)
