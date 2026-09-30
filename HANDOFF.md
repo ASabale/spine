@@ -12,7 +12,7 @@ Second waits are hard stops in `## Question`, not a `Gates:` line. `Blocked by` 
 
 ## Next Steps
 
-Next spine code: when `advance` sends a ticket to `open`, drop the coord row through `spine.claims` (engine stays free of `CoordStore`). Then ticket 19. Finance work is the recorded-close slice in `/Users/akshay/Development/finance`, on a fixture, not on `finance.db`. Do not tag or publish.
+Next spine code: ticket 19, reason in the event log. The open transition now drops the coord row (`2a0bf5a`). Finance recorded-close is in `/Users/akshay/Development/finance` (`close.ts`): only a full account set is recorded net worth, and a positive card balance reduces portable instead of increasing locked. Do not tag or publish.
 
 
 [You have received this identical output 3 times. Re-reading '/Users/akshay/Development/spine/HANDOFF.md:raw' will not change it — use a narrower selector (path:A-B), or proceed with the edit.]
