@@ -86,6 +86,13 @@ class Contract:
         for item in required:
             if item not in status_set:
                 raise ContractError(f"required_before_done unknown status {item}")
+        profiles = raw.get("profiles") or {}
+        if isinstance(profiles, dict):
+            for name, block in profiles.items():
+                if isinstance(block, dict) and "self_approval" in block and not isinstance(
+                    block["self_approval"], bool
+                ):
+                    raise ContractError(f"profiles.{name}.self_approval must be a bool")
         hours = (raw.get("claim") or {}).get("stale_hours")
         if not isinstance(hours, int) or isinstance(hours, bool) or hours <= 0:
             raise ContractError("claim.stale_hours must be a positive int")
@@ -130,6 +137,14 @@ class Contract:
 
     def software_required(self) -> list[str]:
         return list(self.raw["profiles"]["software"]["required_before_done"])
+
+    def allows_self_approval(self, profile: str) -> bool:
+        """True unless that profile sets ``self_approval`` to false."""
+        profiles = self.raw.get("profiles") or {}
+        block = profiles.get(profile) if isinstance(profiles, dict) else None
+        if not isinstance(block, dict):
+            return True
+        return block.get("self_approval", True) is not False
 
     @property
     def inflight(self) -> list[str]:

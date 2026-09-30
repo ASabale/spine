@@ -24,6 +24,7 @@ profiles:
     required_before_done:
       - checking
       - reviewing
+    self_approval: false
   default:
     allow_doing_to_done: true
 claim:

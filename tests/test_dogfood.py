@@ -54,7 +54,7 @@ def test_dogfood_full_route_crash_and_second_worker(tmp_path: Path, monkeypatch)
     set_status(tmp_path, str(wi), "reviewing")
     (tmp_path / ".spine/reviews" / f"{wi.stem}.md").write_text(
         "verdict: approve\n"
-        "by: ada\n"
+        "by: bob\n"
         'when: "2026-09-19T00:00:00+00:00"\n'
         f"revision: {digest}\n"
         "evidence: two-axis pass\n",

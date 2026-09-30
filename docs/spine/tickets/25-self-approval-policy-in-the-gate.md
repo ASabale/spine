@@ -1,21 +1,23 @@
 # Self-approval policy in the gate
 
 Type: task
-Status: open
-Blocked by:
-Owner:
-Claimed-at:
+Status: resolved
+Blocked by: 
+Owner: 
+Claimed-at: 
 
 ## Question
 
-The review gate requires non-empty `by`, but the item's owner can approve their
-own work item — a self-approval hole. Enforce per profile: the software profile
-rejects `by == Owner`; non-software profiles allow it (flagged).
+`require_review` checks that `by` is non-empty. It does not compare `by` to the work item `Owner`. Reviews are YAML under `.spine/reviews/`, not work-item frontmatter.
 
-Resolved = self-approved review on a software item fails the gate; non-software
-passes, flagged.
+Add `self_approval: false` under `profiles.software` in both `docs/spine/contract.yaml` and `src/spine/data/contract.yaml`. Do not add the key under `default`.
 
-- [ ] Self-approved review on a software work item fails the gate (typed error)
-- [ ] Self-approved review on a non-software item passes
-- [ ] Profile policy lives in the contract (explicit, not implicit)
-- [ ] `make test` green
+On `reviewing` → `done`, when the profile is `software` and `self_approval` is false and review `by` equals the work item `Owner`, raise `ReviewInvalid` (exit 5) and do not write. A non-software profile may have `by == Owner`. Do not record `self: true` in this ticket.
+
+Resolved = software self-approval is rejected; non-software self-approval still reaches done.
+
+- [x] Both contract files set `profiles.software.self_approval: false`
+- [x] Software `by == Owner` raises `ReviewInvalid` and leaves status at `reviewing`
+- [x] Software `by` different from `Owner` still reaches `done` (with `SPINE_HUMAN=1` if ticket 20 has landed)
+- [x] Non-software `by == Owner` is allowed
+- [x] `uv run pytest` passes

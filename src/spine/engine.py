@@ -105,6 +105,12 @@ def advance(
             raise ReviewInvalid(
                 f"review revision {review['revision']!r} != content {digest!r}"
             )
+        owner = (meta.get("Owner") or "").strip()
+        reviewer = str(review.get("by") or "").strip()
+        if owner and reviewer == owner and not contract.allows_self_approval(profile):
+            raise ReviewInvalid(
+                f"review by {reviewer} is the owner; software self-approval is off"
+            )
     meta["Status"] = nxt
     write_meta(path, meta, body)
     append_event(

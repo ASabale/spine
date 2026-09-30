@@ -22,6 +22,8 @@ def test_packaged_contract_validates():
     assert not c.allowed("ready", "done")
     assert c.stale_hours == 4
     assert "reviewing" in c.software_required()
+    assert c.allows_self_approval("software") is False
+    assert c.allows_self_approval("default") is True
     assert c.ticket_statuses == ["open", "claimed", "resolved"]
     assert c.ticket_allowed("open", "claimed")
     assert c.ticket_allowed("claimed", "open")
@@ -95,6 +97,14 @@ def test_status_missing_from_transitions_rejected(tmp_path: Path):
     del raw["transitions"]["done"]
     _write_contract(tmp_path, raw)
     with pytest.raises(ContractError):
+        load_contract(tmp_path)
+
+
+def test_self_approval_must_be_bool(tmp_path: Path):
+    raw = _valid_raw()
+    raw["profiles"]["software"]["self_approval"] = "no"
+    _write_contract(tmp_path, raw)
+    with pytest.raises(ContractError, match="self_approval"):
         load_contract(tmp_path)
 
 
