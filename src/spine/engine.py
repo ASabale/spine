@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,7 +11,12 @@ from spine.artifacts import (
     resolve_artifact,
     write_meta,
 )
-from spine.errors import EvaluationInvalid, InvalidTransition, ReviewInvalid
+from spine.errors import (
+    EvaluationInvalid,
+    HumanInterventionRequired,
+    InvalidTransition,
+    ReviewInvalid,
+)
 from spine.events import append_event, content_revision
 from spine.gates import require_eval, require_review
 from spine.model import load_contract
@@ -73,6 +79,8 @@ def advance(
             raise InvalidTransition("non-software doing → done needs an existing Deliverable path")
     elif not contract.allowed(cur, nxt):
         raise InvalidTransition(f"illegal transition {cur} → {nxt}")
+    if cur == "reviewing" and nxt == "done" and os.environ.get("SPINE_HUMAN") != "1":
+        raise HumanInterventionRequired("reviewing → done needs SPINE_HUMAN=1")
     if software and cur == "checking" and nxt == "reviewing":
         evaluation = require_eval(root, path.stem)
         if evaluation["revision"] != digest:
@@ -108,5 +116,6 @@ def advance(
         run_id=run_id,
         spec=spec,
         reason=reason,
+        human=cur == "reviewing" and nxt == "done",
     )
     return AdvanceResult(path=path, previous=cur, status=nxt, changed=True)

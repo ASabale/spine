@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from spine.claims import claim, identity, is_stale, release  # noqa: F401  (re-export)
+from spine.errors import HumanInterventionRequired
 from spine.model import (
     EXEC_ROOT,
     SPEC_ROOT,
@@ -50,6 +52,8 @@ def new_ticket(root: Path, title: str, typ: str = "grilling") -> Path:
 
 
 def new_work_item(root: Path, title: str, profile: str = "software") -> Path:
+    if os.environ.get("SPINE_HUMAN") != "1":
+        raise HumanInterventionRequired("creating a work item needs SPINE_HUMAN=1")
     folder = root / SPEC_ROOT / "work-items"
     folder.mkdir(parents=True, exist_ok=True)
     num = _next_number(root, folder, "work-items")

@@ -45,6 +45,7 @@ def append_event(
     spec: str = "",
     reason: str = "",
     op: str = "status",
+    human: bool = False,
 ) -> Path:
     path = root / EXEC_ROOT / "events.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -59,6 +60,8 @@ def append_event(
         "reason": reason,
         "op": op,
     }
+    if human:
+        rec["human"] = True
     line = json.dumps(rec, separators=(",", ":")) + "\n"
     with path.open("a", encoding="utf-8") as fh:
         fh.write(line)

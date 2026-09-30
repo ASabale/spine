@@ -12,7 +12,7 @@ Second waits are hard stops in `## Question`, not a `Gates:` line. `Blocked by` 
 
 ## Next Steps
 
-Next spine code: ticket 20 (human intervention) or 25, 27, 32, 34, 39. Ticket 19 stores `reason` and `op` on each status event. Finance recorded-close is in `/Users/akshay/Development/finance` (`close.ts`). Do not tag or publish.
+Next spine code: one resolver for the CLI and doctor, then eval and review proofs that survive a clone. Ticket 20 requires `SPINE_HUMAN=1` for a new work item and for `reviewing` → `done`. Finance recorded-close is in `/Users/akshay/Development/finance` (`close.ts`). Do not tag or publish.
 
 
 [You have received this identical output 3 times. Re-reading '/Users/akshay/Development/spine/HANDOFF.md:raw' will not change it — use a narrower selector (path:A-B), or proceed with the edit.]
