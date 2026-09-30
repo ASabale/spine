@@ -12,7 +12,13 @@ from spine.artifacts import (
     write_meta,
 )
 from spine.errors import AmbiguousArtifact
-from spine.model import EXEC_ROOT, SPEC_DIRS, SPEC_ROOT, load_contract, packaged_contract
+from spine.model import (
+    EXEC_ROOT,
+    SPEC_DIRS,
+    SPEC_ROOT,
+    load_contract,
+    packaged_contract,
+)
 
 
 def _find_blocker(root: Path, value: str) -> Path | None:

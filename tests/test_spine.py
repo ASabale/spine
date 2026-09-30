@@ -1,14 +1,29 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 
-from spine.artifacts import board, claim, link, new_ticket, new_work_item, read_meta, release, set_status, write_meta
+from spine.artifacts import (
+    board,
+    claim,
+    link,
+    new_ticket,
+    new_work_item,
+    read_meta,
+    release,
+    set_status,
+    write_meta,
+)
 from spine.cli import main
 from spine.doctor import doctor
-from spine.errors import ClaimConflict, EvaluationInvalid, InvalidTransition, ReviewInvalid
+from spine.errors import (
+    ClaimConflict,
+    EvaluationInvalid,
+    InvalidTransition,
+    ReviewInvalid,
+)
 from spine.events import content_revision
 from spine.initcmd import init_target
 from spine.model import load_contract
@@ -104,7 +119,7 @@ def test_doctor_releases_stale_claim(tmp_path: Path, monkeypatch):
     wi = new_work_item(tmp_path, "Stale")
     claim(tmp_path, str(wi))
     meta, body = read_meta(wi)
-    old = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
+    old = (datetime.now(UTC) - timedelta(hours=5)).isoformat()
     meta["Claimed-at"] = old
     write_meta(wi, meta, body)
     msgs = doctor(tmp_path, apply=True)
@@ -222,7 +237,7 @@ def test_doctor_reports_missing_spec_files(tmp_path: Path):
 
 
 def test_install_cmd_uses_wired_skills():
-    from spine.evolve import install_cmd, skills_for_pack, load_wires
+    from spine.evolve import install_cmd, load_wires, skills_for_pack
 
     wires = load_wires(Path("/nonexistent-spine-root"))
     pack = wires["default_pack"]

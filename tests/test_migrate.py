@@ -32,7 +32,6 @@ def test_migrate_apply_upgrades_invalid_contract(tmp_path: Path):
 def test_migrate_rollback_restores_backup(tmp_path: Path):
     init_target(tmp_path)
     path = tmp_path / "docs/spine/contract.yaml"
-    original = path.read_text(encoding="utf-8")
     path.write_text("version: 1\nstatuses: []\n", encoding="utf-8")
     migrate(tmp_path)
     assert load_contract(tmp_path).ticket_statuses

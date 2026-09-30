@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from spine.model import ContractError, SPEC_ROOT, load_contract, packaged_contract
+from spine.model import SPEC_ROOT, ContractError, load_contract, packaged_contract
 
 REPO = Path(__file__).resolve().parent.parent
 
@@ -32,7 +32,7 @@ def test_packaged_contract_validates():
 
 
 def test_no_hardcoded_ticket_machine():
-    import spine.model as model
+    from spine import model
 
     assert not hasattr(model, "TICKET_STATUSES")
     assert not hasattr(model, "TICKET_TRANSITIONS")

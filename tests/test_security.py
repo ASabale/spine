@@ -39,8 +39,7 @@ def test_install_cmd_is_argv_list():
 def test_no_shell_true_in_product():
     import inspect
 
-    import spine.artifacts as artifacts
-    import spine.evolve as evolve
+    from spine import artifacts, evolve
 
     assert "shell=True" not in inspect.getsource(evolve)
     assert "shell=True" not in inspect.getsource(artifacts)

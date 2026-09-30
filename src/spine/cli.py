@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 from spine import __version__
-from spine.events import latest_reason
 from spine.artifacts import (
     board,
     claim,
@@ -15,17 +14,18 @@ from spine.artifacts import (
     new_ticket,
     new_work_item,
     next_lines,
-    release,
     read_meta,
+    release,
     resolve_artifact,
     set_status,
     status_payload,
 )
 from spine.doctor import doctor, doctor_ok
 from spine.errors import SpineError, exit_code_for
+from spine.events import latest_reason
 from spine.evolve import evolve, install_wires, set_pack
-from spine.migrate import migrate
 from spine.initcmd import init_target
+from spine.migrate import migrate
 from spine.model import SPEC_ROOT
 
 
@@ -83,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     p_next = sub.add_parser("next", help="print only the next command")
     _add_json_flag(p_next)
 
-    p_run = sub.add_parser("run", help="print the first executable spine command")
+    sub.add_parser("run", help="print the first executable spine command")
 
     p_prime = sub.add_parser("prime", help="agent sit-down: doctor then next as JSON")
     p_prime.add_argument("--report-only", action="store_true")

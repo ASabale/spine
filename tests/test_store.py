@@ -7,7 +7,6 @@ from spine.initcmd import init_target
 from spine.store import CoordStore, FileStore
 
 
-
 def test_filestore_roundtrip(tmp_path: Path):
     init_target(tmp_path)
     store = FileStore(tmp_path)
@@ -51,7 +50,8 @@ def test_coordstore_survives_reopen(tmp_path: Path):
 
 def test_engine_does_not_import_sqlite():
     import inspect
-    import spine.engine as engine
+
+    from spine import engine
 
     src = inspect.getsource(engine)
     assert "sqlite3" not in src
@@ -61,8 +61,7 @@ def test_engine_does_not_import_sqlite():
 def test_query_owns_next_and_board():
     import inspect
 
-    import spine.artifacts as artifacts
-    import spine.query as query
+    from spine import artifacts, query
 
     assert query.next_lines is artifacts.next_lines
     assert query.board is artifacts.board

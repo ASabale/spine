@@ -8,7 +8,6 @@ from spine.initcmd import init_target
 from spine.model import load_contract
 from spine.query import status_payload
 
-
 REPO = Path(__file__).resolve().parent.parent
 
 

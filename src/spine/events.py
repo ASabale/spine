@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from spine.model import EXEC_ROOT, parse_front
@@ -51,7 +51,7 @@ def append_event(
     path.parent.mkdir(parents=True, exist_ok=True)
     rec = {
         "actor": actor,
-        "time": datetime.now(timezone.utc).isoformat(),
+        "time": datetime.now(UTC).isoformat(),
         "from": from_status,
         "to": to_status,
         "revision": revision,

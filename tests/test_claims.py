@@ -2,8 +2,7 @@ from pathlib import Path
 
 import pytest
 
-import spine.artifacts as artifacts
-import spine.claims as claims
+from spine import artifacts, claims
 from spine.artifacts import claim, new_ticket, read_meta, release, set_status
 from spine.errors import ClaimConflict
 from spine.initcmd import init_target

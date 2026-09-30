@@ -62,7 +62,7 @@ def test_append_event_is_append_only(tmp_path: Path):
 
 
 def test_append_event_calls_fsync():
-    import spine.events as events
+    from spine import events
 
     src = inspect.getsource(events)
     assert "fsync" in src

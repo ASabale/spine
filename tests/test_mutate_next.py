@@ -5,6 +5,7 @@ from spine.artifacts import new_ticket, new_work_item
 from spine.cli import main
 from spine.initcmd import init_target
 
+
 def test_claim_prints_next(tmp_path: Path, monkeypatch, capsys):
     monkeypatch.setenv("SPINE_USER", "ada")
     monkeypatch.chdir(tmp_path)

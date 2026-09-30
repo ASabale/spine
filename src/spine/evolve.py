@@ -68,7 +68,7 @@ def install_wires(root: Path, *, extra_pack: str | None = None) -> list[str]:
         return notes
     for pack, skills in jobs:
         cmd = install_cmd(pack, skills, npx)
-        proc = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
+        proc = subprocess.run(cmd, cwd=root, capture_output=True, text=True, check=False)
         notes.append(f"$ {' '.join(cmd)} exit={proc.returncode}")
         if proc.stdout:
             notes.append(proc.stdout[-2000:])
@@ -81,7 +81,13 @@ def evolve(root: Path) -> list[str]:
     notes = init_target(root, refresh=True)
     npx = _npx()
     if npx:
-        proc = subprocess.run([npx, "--yes", "skills", "update"], cwd=root, capture_output=True, text=True)
+        proc = subprocess.run(
+            [npx, "--yes", "skills", "update"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         notes.append(f"skills update exit={proc.returncode}")
         if proc.stdout:
             notes.append(proc.stdout[-1500:])

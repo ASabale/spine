@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import os
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from spine.errors import ClaimConflict
@@ -48,7 +48,7 @@ def identity() -> str:
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def owner_of(root: Path, path: Path, meta: dict[str, str]) -> tuple[str, str]:
@@ -68,7 +68,7 @@ def _stale(iso: str, hours: int | None = None, root: Path | None = None) -> bool
     except ValueError:
         return True
     if then.tzinfo is None:
-        then = then.replace(tzinfo=timezone.utc)
+        then = then.replace(tzinfo=UTC)
     return (_now() - then).total_seconds() > hours * 3600
 
 

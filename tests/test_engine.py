@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from spine.artifacts import new_work_item, read_meta, set_status
+from spine.artifacts import new_work_item, read_meta
 from spine.cli import main
 from spine.engine import advance
 from spine.errors import InvalidTransition

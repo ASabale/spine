@@ -3,7 +3,7 @@
 import inspect
 from pathlib import Path
 
-from spine.artifacts import claim, new_ticket, new_work_item, resolve_artifact
+from spine.artifacts import claim, new_ticket, resolve_artifact
 from spine.errors import ClaimConflict
 from spine.initcmd import init_target
 from spine.query import next_lines, status_payload
@@ -37,7 +37,7 @@ def test_invariant_no_escape_from_target(tmp_path: Path):
 
 
 def test_invariant_engine_sqlite_free():
-    import spine.engine as engine
+    from spine import engine
 
     src = inspect.getsource(engine)
     assert "sqlite3" not in src

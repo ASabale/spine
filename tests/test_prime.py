@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
 import json
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 from spine.artifacts import claim, new_work_item, read_meta, write_meta
 from spine.cli import main
@@ -14,7 +14,7 @@ def test_prime_report_only_keeps_stale_owner(tmp_path: Path, monkeypatch, capsys
     wi = new_work_item(tmp_path, "Stale")
     claim(tmp_path, str(wi))
     meta, body = read_meta(wi)
-    meta["Claimed-at"] = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
+    meta["Claimed-at"] = (datetime.now(UTC) - timedelta(hours=5)).isoformat()
     write_meta(wi, meta, body)
     capsys.readouterr()
     assert main(["prime", "--report-only"]) == 8
@@ -36,7 +36,7 @@ def test_prime_ok_true_after_init(tmp_path: Path, monkeypatch, capsys):
 
 
 def test_prime_ok_false_on_broken_blocker(tmp_path: Path, monkeypatch, capsys):
-    from spine.artifacts import new_ticket, write_meta, read_meta
+    from spine.artifacts import new_ticket, read_meta, write_meta
 
     monkeypatch.chdir(tmp_path)
     init_target(tmp_path)

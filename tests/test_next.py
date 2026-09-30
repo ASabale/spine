@@ -2,7 +2,17 @@ from pathlib import Path
 
 import pytest
 
-from spine.artifacts import board, claim, new_ticket, new_work_item, next_lines, read_meta, release, set_status, write_meta
+from spine.artifacts import (
+    board,
+    claim,
+    new_ticket,
+    new_work_item,
+    next_lines,
+    read_meta,
+    release,
+    set_status,
+    write_meta,
+)
 from spine.cli import main
 from spine.doctor import doctor
 from spine.errors import ClaimConflict, InvalidTransition
@@ -285,7 +295,7 @@ def test_cli_prime_json(tmp_path: Path, monkeypatch, capsys):
 
 def test_cli_prime_report_only_keeps_stale_claim(tmp_path: Path, monkeypatch, capsys):
     import json
-    from datetime import datetime, timedelta, timezone
+    from datetime import UTC, datetime, timedelta
 
     monkeypatch.setenv("SPINE_USER", "ada")
     monkeypatch.chdir(tmp_path)
@@ -293,7 +303,7 @@ def test_cli_prime_report_only_keeps_stale_claim(tmp_path: Path, monkeypatch, ca
     tk = new_ticket(tmp_path, "Stale claim")
     claim(tmp_path, str(tk))
     meta, body = read_meta(tk)
-    meta["Claimed-at"] = (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat()
+    meta["Claimed-at"] = (datetime.now(UTC) - timedelta(hours=5)).isoformat()
     write_meta(tk, meta, body)
     capsys.readouterr()
     assert main(["prime", "--report-only"]) == 8

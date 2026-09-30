@@ -49,7 +49,7 @@ def _contract_version(root: Path) -> int | None:
         return None
     try:
         return load_contract(root).version
-    except Exception:
+    except Exception:  # noqa: BLE001  # an unreadable contract has no version
         return None
 
 

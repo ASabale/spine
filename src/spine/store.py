@@ -9,7 +9,6 @@ from spine.errors import ClaimConflict
 from spine.model import EXEC_ROOT, dump_front, parse_front
 
 
-
 class ArtifactStore(Protocol):
     def load(self, path: Path) -> tuple[dict[str, str], str]: ...
     def save(self, path: Path, meta: dict[str, str], body: str) -> None: ...

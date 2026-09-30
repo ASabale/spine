@@ -10,7 +10,6 @@ from spine.model import (
     SPEC_ROOT,
     dump_front,
 )
-
 from spine.store import CoordStore, FileStore
 
 
@@ -207,4 +206,10 @@ def link(root: Path, a: str, b: str) -> None:
         write_meta(path, meta, body)
 
 
-from spine.query import board, claimable_from_next, next_lines, status_payload
+# Late re-export: a top-level import cycles claims → artifacts → query → claims.
+from spine.query import (  # noqa: F401
+    board,
+    claimable_from_next,
+    next_lines,
+    status_payload,
+)

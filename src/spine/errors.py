@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 class SpineError(Exception):
     exit_code = 1
 

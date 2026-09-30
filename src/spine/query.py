@@ -8,7 +8,6 @@ from spine.artifacts import identity, read_meta
 from spine.model import SPEC_ROOT, load_contract
 
 
-
 def _md_names(folder: Path) -> list[str]:
     if not folder.is_dir():
         return []

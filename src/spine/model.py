@@ -156,9 +156,8 @@ class Contract:
 
     def next_gates(self, current: str, *, software: bool = True) -> list[str]:
         nxt = list(self.transitions.get(current, []))
-        if current == "doing" and not software:
-            if "done" not in nxt:
-                nxt.append("done")
+        if current == "doing" and not software and "done" not in nxt:
+            nxt.append("done")
         return nxt
 
 

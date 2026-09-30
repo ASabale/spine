@@ -11,6 +11,7 @@ invariants:
 	$(PYTEST) -q tests/test_invariants.py tests/test_harness.py tests/test_claims.py tests/test_security.py tests/test_migrate.py
 
 lint:
+	$(UV) run ruff check src tests
 	$(PYTHON) -m compileall -q src/spine
 
 typecheck:
