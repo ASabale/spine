@@ -1,7 +1,7 @@
 # Claim as one module
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 
 Owner: 
 Claimed-at: 
