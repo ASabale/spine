@@ -64,7 +64,7 @@ def test_fifty_workers_one_winner(tmp_path: Path, monkeypatch):
     init_target(tmp_path)
     wi = new_work_item(tmp_path, "Hot")
     monkeypatch.setattr(
-        "spine.artifacts.identity", lambda: threading.current_thread().name
+        "spine.claims.identity", lambda: threading.current_thread().name
     )
     n = 50
     barrier = threading.Barrier(n)
@@ -102,7 +102,7 @@ def test_fifty_workers_claim_advance_release(tmp_path: Path, monkeypatch):
     init_target(tmp_path)
     items = [new_work_item(tmp_path, f"Work {i:02d}") for i in range(50)]
     monkeypatch.setattr(
-        "spine.artifacts.identity", lambda: threading.current_thread().name
+        "spine.claims.identity", lambda: threading.current_thread().name
     )
     barrier = threading.Barrier(50)
     errors: list[str] = []

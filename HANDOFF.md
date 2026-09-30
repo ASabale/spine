@@ -4,12 +4,15 @@
 
 Tree version **0.3.0**. Published as **spine-cli 0.3.0** on PyPI and GitHub (`v0.3.0`). Sit-down: `spine prime`. Exec: `spine run`.
 
-**1.0 plan is cut (2026-09-21):** `docs/spine/maps/1.0.md` — destination (a spine the fleet can trust: verifiable authority + an audit trail that proves it), 9 grilling decisions, 6-wave route, fog, out-of-scope. Tickets **16–38** (23, fine-grained): trust chain 16–26, engineering 27–31, docs 32–35, release 36–38. Frontier = wave 0: 16, 19, 20, 25, 27, 32, 34.
+**1.0 tickets are sliced for one local-agent session each (2026-09-23).** Map: `docs/spine/maps/1.0.md`. Tickets **16–42**. Coverage is ticket 42, not ticket 36. Ticket 36 is changelog and version only. Ticket 38 is a human checklist (no tag, no push, no publish).
 
-Format convention: single-value `Blocked by` (doctor resolves one reference; a comma list is a hazard) + full gate list as a `Gates:` line in the body (21, 23, 24, 35, 36, 38). Coverage 70→85 lives in 36 (release prep), not as a standalone ticket.
+Ticket 16's code is delivered. `spine.claims` owns claim, release, staleness, and identity. `artifacts` re-exports those four names. `uv run pytest`: 161 passed. The ticket's Status was not edited by hand. Plan: `research/2026-09-30-execution-plan.md`.
 
-Verified green: `uv run pytest -q` (160 passed), `spine doctor` (all parse, no broken refs), `spine status` (frontier correct).
+Second waits are hard stops in `## Question`, not a `Gates:` line. `Blocked by` stays one filename.
 
 ## Next Steps
 
-Awaiting user scan of the numbered breakdown (tickets 16–38). On GO: dispatch the builder per AGENTS.md, wave 0 first (`builder` on local Qwen, `--verify "uv run pytest"`); reviewer pass offered after each wave.
+Next spine code: when `advance` sends a ticket to `open`, drop the coord row through `spine.claims` (engine stays free of `CoordStore`). Then ticket 19. Finance work is the recorded-close slice in `/Users/akshay/Development/finance`, on a fixture, not on `finance.db`. Do not tag or publish.
+
+
+[You have received this identical output 3 times. Re-reading '/Users/akshay/Development/spine/HANDOFF.md:raw' will not change it — use a narrower selector (path:A-B), or proceed with the edit.]

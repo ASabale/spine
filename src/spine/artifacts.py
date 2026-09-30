@@ -1,43 +1,15 @@
 from __future__ import annotations
 
-import os
-import subprocess
-from datetime import datetime, timezone
 from pathlib import Path
 
-from spine.errors import ClaimConflict
-
+from spine.claims import claim, identity, is_stale, release  # noqa: F401  (re-export)
 from spine.model import (
     EXEC_ROOT,
     SPEC_ROOT,
     dump_front,
-    load_contract,
 )
 
 from spine.store import CoordStore, FileStore
-
-
-def _now() -> datetime:
-    return datetime.now(timezone.utc)
-
-
-def identity() -> str:
-    env = os.environ.get("SPINE_USER") or os.environ.get("GIT_AUTHOR_NAME")
-    if env:
-        return env
-    try:
-        proc = subprocess.run(
-            ["git", "config", "--get", "user.name"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        name = (proc.stdout or "").strip()
-        if proc.returncode == 0 and name:
-            return name
-    except OSError:
-        pass
-    return os.environ.get("USER") or "unknown"
 
 
 def _slug(title: str) -> str:
@@ -157,74 +129,6 @@ def set_status(root: Path, spec: str, nxt: str) -> Path:
     from spine.engine import advance
 
     return advance(root, spec, nxt).path
-
-
-def claim(root: Path, spec: str) -> Path:
-    path = resolve_artifact(root, spec)
-    meta, body = read_meta(path)
-    key = str(path.relative_to(root))
-    store = CoordStore(root)
-    row = store.get_claim(key)
-    owner = (row[0] if row else meta.get("Owner") or "")
-    claimed_at = (row[1] if row else meta.get("Claimed-at") or "")
-    if owner and claimed_at and not _stale(claimed_at, root=root):
-        raise ClaimConflict(f"already claimed by {owner} at {claimed_at}")
-    if row:
-        store.drop_claim(key, force=True)
-    me = identity()
-    now = _now().isoformat()
-    store.take_claim(key, me, now)
-    meta["Owner"] = me
-    meta["Claimed-at"] = now
-    if meta.get("Status") == "open":
-        meta["Status"] = "claimed"
-    write_meta(path, meta, body)
-    runtime = root / EXEC_ROOT / "claims" / f"{path.stem}.claim"
-    runtime.parent.mkdir(parents=True, exist_ok=True)
-    runtime.write_text(f"{meta['Owner']}\n{meta['Claimed-at']}\n", encoding="utf-8")
-    return path
-
-
-def release(root: Path, spec: str, *, force: bool = False) -> Path:
-    path = resolve_artifact(root, spec)
-    meta, body = read_meta(path)
-    key = str(path.relative_to(root))
-    store = CoordStore(root)
-    row = store.get_claim(key)
-    me = identity()
-    held_by = (row[0] if row else meta.get("Owner") or "")
-    claimed_at = (row[1] if row else meta.get("Claimed-at") or "")
-    stale = bool(claimed_at) and _stale(claimed_at, root=root)
-    if held_by and held_by != me and not stale and not force:
-        raise ClaimConflict(f"held by {held_by}, not {me}")
-    store.drop_claim(key, owner=me, force=force or stale or not held_by)
-    meta["Owner"] = ""
-    meta["Claimed-at"] = ""
-    if meta.get("Status") == "claimed":
-        meta["Status"] = "open"
-    write_meta(path, meta, body)
-    runtime = root / EXEC_ROOT / "claims" / f"{path.stem}.claim"
-    if runtime.exists():
-        runtime.unlink()
-    return path
-
-
-def _stale(iso: str, hours: int | None = None, root: Path | None = None) -> bool:
-    hours = hours or load_contract(root).stale_hours
-    try:
-        then = datetime.fromisoformat(iso)
-    except ValueError:
-        return True
-    if then.tzinfo is None:
-        then = then.replace(tzinfo=timezone.utc)
-    return (_now() - then).total_seconds() > hours * 3600
-
-
-def is_stale(meta: dict[str, str], root: Path | None = None) -> bool:
-    at = meta.get("Claimed-at") or ""
-    if not at:
-        return False
-    return _stale(at, root=root)
 
 
 def link(root: Path, a: str, b: str) -> None:

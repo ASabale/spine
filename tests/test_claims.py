@@ -2,10 +2,19 @@ from pathlib import Path
 
 import pytest
 
+import spine.artifacts as artifacts
+import spine.claims as claims
 from spine.artifacts import claim, new_ticket, read_meta, release
 from spine.errors import ClaimConflict
 from spine.initcmd import init_target
 from spine.store import CoordStore
+
+
+def test_claim_api_is_the_claims_module():
+    assert artifacts.claim is claims.claim
+    assert artifacts.release is claims.release
+    assert artifacts.is_stale is claims.is_stale
+    assert artifacts.identity is claims.identity
 
 
 def test_claim_records_sqlite_row(tmp_path: Path, monkeypatch):
